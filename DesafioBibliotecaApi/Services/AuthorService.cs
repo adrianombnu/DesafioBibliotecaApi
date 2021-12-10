@@ -9,7 +9,7 @@ namespace DesafioBibliotecaApi.Services
 {
     public class AuthorService
     {
-        private readonly AuthorRepository _authorRepository;        
+        private readonly AuthorRepository _authorRepository;
 
         public AuthorService(AuthorRepository repository)
         {
@@ -18,6 +18,11 @@ namespace DesafioBibliotecaApi.Services
 
         public AuthorDTO Create(Author author)
         {
+            var authorExists = _authorRepository.GetByUsername(author.Name);
+
+            if (authorExists != null)
+                throw new Exception("The author is already registered, try another one!");
+
             var userCreated = _authorRepository.Create(author);
 
             return new AuthorDTO
@@ -26,7 +31,7 @@ namespace DesafioBibliotecaApi.Services
                 Lastname = userCreated.Lastname,
                 Nacionality = userCreated.Nacionality,
                 Age = userCreated.Age,
-                Id = userCreated.Id                
+                Id = userCreated.Id
             };
 
         }
@@ -52,7 +57,7 @@ namespace DesafioBibliotecaApi.Services
         {
             var authors = _authorRepository.Get();
 
-            return authors.Select(a => 
+            return authors.Select(a =>
             {
                 return new AuthorDTO
                 {
@@ -62,7 +67,8 @@ namespace DesafioBibliotecaApi.Services
                     Age = a.Age,
                     Id = a.Id
                 };
-            });
+            }).Where(x => x.Name == name || x.Nacionality == nationality || x.Age == age);
+
         }
 
         public AuthorDTO Get(Guid id)

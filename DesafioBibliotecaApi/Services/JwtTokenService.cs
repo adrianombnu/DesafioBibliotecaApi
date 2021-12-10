@@ -13,7 +13,7 @@ namespace DesafioBibliotecaApi.Services
         private readonly IConfiguration _configuration;
         public JwtTokenService(IConfiguration configuration)
         {
-            _configuration = configuration; 
+            _configuration = configuration;
         }
 
         public string GenerateToken(User user)
@@ -22,20 +22,36 @@ namespace DesafioBibliotecaApi.Services
             var key = Encoding.ASCII.GetBytes(_configuration.GetValue<string>("Secret"));
             var timelLimitToken = _configuration.GetValue<int>("TimelLimitToken");
 
-            var tokenDescriptor = new SecurityTokenDescriptor
+            if (user.Role is not null)
             {
-                Subject = new ClaimsIdentity(new Claim[]
+                var tokenDescriptor = new SecurityTokenDescriptor
                 {
+                    Subject = new ClaimsIdentity(new Claim[]
+                    {
                     new Claim(ClaimTypes.Role, user.Role),
                     new Claim(ClaimTypes.Name, user.UserName)
-                }),
-                Expires = DateTime.UtcNow.AddMinutes(timelLimitToken),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
-
+                    }),
+                    Expires = DateTime.UtcNow.AddMinutes(timelLimitToken),
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                };
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                return tokenHandler.WriteToken(token);
+            }
+            else
+            {
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new Claim[]
+                    {                    
+                        new Claim(ClaimTypes.Name, user.UserName)
+                    }),
+                    Expires = DateTime.UtcNow.AddMinutes(timelLimitToken),
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                };
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                return tokenHandler.WriteToken(token);
+            }
+                        
         }
     }
 }

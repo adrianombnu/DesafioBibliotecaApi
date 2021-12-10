@@ -28,7 +28,17 @@ namespace DesafioBibliotecaApi.Repositorio
 
             return client;
 
-        }               
+        }
+        public Client GetIdUser(Guid idUser)
+        {
+            var client = _clients.Where(a => a.IdUser == idUser).SingleOrDefault();
+
+            if (client is null)
+                throw new Exception("Client not found.");
+
+            return client;
+
+        }
 
         public Client Create(Client client)
         {

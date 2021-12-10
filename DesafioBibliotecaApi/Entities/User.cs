@@ -12,5 +12,11 @@ namespace DesafioBibliotecaApi.Entidades
         public bool IsLockout { get; set; }
         public DateTime? LockoutDate { get; set; }
 
+        public void UpdateLogin(string newPassword)
+        {
+            Password = newPassword; 
+
+        }
+
     }
 }

@@ -104,7 +104,14 @@ namespace DesafioBibliotecaApi
             services.AddSingleton<AuthorRepository>();
             services.AddSingleton<ClientRepository>();
             services.AddSingleton<AdressRepository>();
-            services.AddTransient<UserService>();
+            services.AddSingleton<BookRepository>();
+
+            services.AddTransient<LoginService>();
+            services.AddTransient<CustumerService>();
+            services.AddTransient<AdressService>();
+            services.AddTransient<BookService>();
+            services.AddTransient<ClientService>();
+            services.AddTransient<EmployeeService>();
             services.AddTransient<AuthorService>();
             services.AddTransient<JwtTokenService>();
         }

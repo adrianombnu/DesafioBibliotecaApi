@@ -27,7 +27,7 @@ namespace DesafioBibliotecaApi.Repositorio
             throw new Exception("Usuário não encontrado.");
 
         }
-
+        
         public User GetByUsername(string username)
         {
             return _users.Values.Where(u => u.UserName == username).FirstOrDefault();

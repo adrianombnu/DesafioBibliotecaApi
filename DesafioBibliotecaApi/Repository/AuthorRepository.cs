@@ -70,7 +70,12 @@ namespace DesafioBibliotecaApi.Repositorio
             return authors;
 
         }
-                
+        public Author GetByUsername(string name)
+        {
+            return _authors.Where(u => u.Name == name).FirstOrDefault();
+
+        }
+
     }
 
 }

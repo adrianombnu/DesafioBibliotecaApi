@@ -19,7 +19,8 @@ namespace DesafioBibliotecaApi.Controllers
             _authorService = authorService;
         }
 
-        [HttpPost, Authorize(Roles = "admin, functionary")]
+        //[HttpPost, Authorize(Roles = "admin, functionary")]
+        [HttpPost, AllowAnonymous]
         public IActionResult Create([FromBody] NewAuthorDTO authorDTO)
         {
             authorDTO.Validar();
@@ -39,10 +40,11 @@ namespace DesafioBibliotecaApi.Controllers
                 return BadRequest("Error creating author : " + ex.Message);
             }      
                         
-        }        
+        }
 
-        
-        [HttpGet, Authorize]
+
+        //[HttpGet, Authorize]
+        [HttpGet]
         public IActionResult Get([FromQuery] string name, [FromQuery] string nationality, [FromQuery] int age, [FromQuery] int page, [FromQuery] int itens)
         {
             var authors = _authorService.GetFilter(name, nationality, age, page, itens);
@@ -58,7 +60,8 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        [HttpDelete, Authorize(Roles = "admin, functionary"), Route("{id}/authors")]
+        //[HttpDelete, Authorize(Roles = "admin, functionary"), Route("{id}/authors")]
+        [HttpDelete, Route("{id}/authors")]
         public IActionResult Delete(Guid id)
         {
             if (!_authorService.Delete(id))
@@ -67,7 +70,8 @@ namespace DesafioBibliotecaApi.Controllers
             return Ok("Author deleted with success.");
         }
 
-        [HttpPut, Authorize(Roles = "admin, functionary"), Route("{id}/authors")]
+        //[HttpPut, Authorize(Roles = "admin, functionary"), Route("{id}/authors")]
+        [HttpPut, Route("{id}/authors")]
         public IActionResult UpdateAuthor(Guid id, NewAuthorDTO authorDTO)
         {
             authorDTO.Validar();
