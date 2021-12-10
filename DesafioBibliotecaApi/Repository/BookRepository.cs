@@ -70,7 +70,13 @@ namespace DesafioBibliotecaApi.Repositorio
             return bookUpdate;
 
         }
-                
+
+        public Book GetByName(string name)
+        {
+            return _books.Where(u => u.Name == name).FirstOrDefault();
+
+        }
+
     }
 
 }

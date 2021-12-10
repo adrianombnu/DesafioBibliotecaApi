@@ -67,7 +67,7 @@ namespace DesafioBibliotecaApi.Services
                     Age = a.Age,
                     Id = a.Id
                 };
-            }).Where(x => x.Name == name || x.Nacionality == nationality || x.Age == age);
+            });
 
         }
 

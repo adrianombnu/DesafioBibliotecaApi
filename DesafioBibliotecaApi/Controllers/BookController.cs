@@ -31,8 +31,7 @@ namespace DesafioBibliotecaApi.Controllers
 
             try
             {
-                var author = new Author(bookDTO.Author.Name, bookDTO.Author.Lastname, bookDTO.Author.Nacionality, bookDTO.Author.Age);
-                var book = new Book(bookDTO.Name, bookDTO.Description, bookDTO.ReleaseYear, author);
+                var book = new Book(bookDTO.Name, bookDTO.Description, bookDTO.ReleaseYear, bookDTO.AuthorId, bookDTO.QuantityInventory);
 
                 return Created("", _bookService.Create(book));
 
@@ -80,8 +79,7 @@ namespace DesafioBibliotecaApi.Controllers
 
             try
             {
-                var author = new Author(bookDTO.Author.Name, bookDTO.Author.Lastname, bookDTO.Author.Nacionality, bookDTO.Author.Age);
-                var book = new Book(bookDTO.Name, bookDTO.Description, bookDTO.ReleaseYear, author);
+                var book = new Book(bookDTO.Name, bookDTO.Description, bookDTO.ReleaseYear, bookDTO.AuthorId,bookDTO.QuantityInventory);
 
                 return Created("", _bookService.UpdateBook(id, book));
 

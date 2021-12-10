@@ -10,14 +10,26 @@ namespace DesafioBibliotecaApi.Services
     public class BookService
     {
         private readonly BookRepository _bookRepository;
+        private readonly AuthorRepository _authorRepository;
 
-        public BookService(BookRepository repository)
+        public BookService(BookRepository repository, AuthorRepository authorRepository)
         {
             _bookRepository = repository;
-        }
+            _authorRepository = authorRepository;
+         }
 
         public BookDTO Create(Book book)
         {
+            var author = _authorRepository.Get(book.AuthorId);
+
+            if (author is null)
+                throw new ArgumentException("Author not found");
+
+            var bookExists = _bookRepository.GetByName(book.Name);
+
+            if (bookExists != null)
+                throw new Exception("The book is already registered, try another one!");
+
             var bookCreated = _bookRepository.Create(book);
 
             return new BookDTO
@@ -25,14 +37,7 @@ namespace DesafioBibliotecaApi.Services
                 Name = bookCreated.Name,
                 ReleaseYear = bookCreated.ReleaseYear,
                 Description = bookCreated.Description,
-                Author = new AuthorDTO
-                {
-                    Name = bookCreated.Author.Name,
-                    Age = bookCreated.Author.Age,
-                    Id = bookCreated.Author.Id,
-                    Lastname = bookCreated.Author.Lastname,
-                    Nacionality = bookCreated.Author.Nacionality
-                }
+                AuthorId = bookCreated.AuthorId
             };
 
         }
@@ -77,14 +82,7 @@ namespace DesafioBibliotecaApi.Services
                 Name = book.Name,
                 ReleaseYear = book.ReleaseYear,
                 Description = book.Description,
-                Author = new AuthorDTO
-                {
-                    Name = book.Author.Name,
-                    Age = book.Author.Age,
-                    Id = book.Author.Id,
-                    Lastname = book.Author.Lastname,
-                    Nacionality = book.Author.Nacionality
-                }
+                AuthorId = book.AuthorId
             };
         }
 
@@ -104,17 +102,13 @@ namespace DesafioBibliotecaApi.Services
                 Name = books.Name,
                 ReleaseYear = books.ReleaseYear,
                 Description = books.Description,
-                Author = new AuthorDTO
-                {
-                    Name = books.Author.Name,
-                    Age = books.Author.Age,
-                    Id = books.Author.Id,
-                    Lastname = books.Author.Lastname,
-                    Nacionality = books.Author.Nacionality
-                }
+                AuthorId = books.AuthorId
+
             };
 
         }
+
+        
 
     }
 }

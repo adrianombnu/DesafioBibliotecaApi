@@ -9,7 +9,8 @@ namespace DesafioBibliotecaApi.DTOs
         public string Name { get; set; }
         public string Description { get; set; }
         public DateTime ReleaseYear { get; set; }
-        public AuthorDTO Author { get; set; }
+        public Guid AuthorId { get; set; }
+        public int QuantityInventory { get; set; }
 
         public override void Validar()
         {
@@ -21,6 +22,8 @@ namespace DesafioBibliotecaApi.DTOs
             if (Description is null && Description.Length > 150)
                 Valido = false;
 
+            if (AuthorId.ToString().Length < 0)
+                Valido = false;
         }
 
     }

@@ -74,6 +74,13 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
+        [HttpPut, AllowAnonymous, Route("login")]
+        public IActionResult Login([FromBody] UpdateLoginDTO loginDTO)
+        {
+            return Ok(_loginService.UpdateLogin(loginDTO.Username, loginDTO.PastPassword, loginDTO.NewPassword, loginDTO.ConfirmNewPassword));
+
+        }
+
         [HttpGet]
         public IActionResult Get()
         {
