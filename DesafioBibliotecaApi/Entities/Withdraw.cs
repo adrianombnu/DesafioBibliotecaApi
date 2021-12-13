@@ -9,7 +9,7 @@ namespace DesafioBibliotecaApi.Entities
         public DateTime InitialDate { get; set; }
         public DateTime FinalDate { get; set; }
         public List<Book> Books { get; set; }
-        public Client Client { get; set; }
+        public Guid IdClient { get; set; }
 
 
     }

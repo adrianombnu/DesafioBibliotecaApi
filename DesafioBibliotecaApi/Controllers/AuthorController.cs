@@ -19,7 +19,8 @@ namespace DesafioBibliotecaApi.Controllers
             _authorService = authorService;
         }
 
-        [HttpPost, Authorize(Roles = "admin, functionary")]
+        //[HttpPost, Authorize(Roles = "admin, functionary")]
+        [HttpPost]
         public IActionResult Create([FromBody] NewAuthorDTO authorDTO)
         {
             authorDTO.Validar();
@@ -42,7 +43,8 @@ namespace DesafioBibliotecaApi.Controllers
         }
 
 
-        [HttpGet, Authorize]
+        //[HttpGet, Authorize]
+        [HttpGet]
         public IActionResult Get([FromQuery] string name, [FromQuery] string nationality, [FromQuery] int age, [FromQuery] int page, [FromQuery] int itens)
         {
             return Ok(_authorService.GetFilter(name, nationality, age, page, itens));

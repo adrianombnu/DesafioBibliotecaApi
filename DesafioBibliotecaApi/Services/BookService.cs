@@ -39,7 +39,8 @@ namespace DesafioBibliotecaApi.Services
                 ReleaseYear = bookCreated.ReleaseYear,
                 Description = bookCreated.Description,
                 AuthorId = bookCreated.AuthorId,
-                QuantityInventory = bookCreated.QuantityInventory                
+                QuantityInventory = bookCreated.QuantityInventory
+               
             };
 
         }
@@ -75,6 +76,7 @@ namespace DesafioBibliotecaApi.Services
                 Description = book.Description,
                 AuthorId = book.AuthorId,
                 QuantityInventory = book.QuantityInventory
+                
             };
         }
 

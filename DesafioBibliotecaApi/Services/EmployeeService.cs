@@ -98,7 +98,9 @@ namespace DesafioBibliotecaApi.Services
                         Document = u.Client.Document,
                         Lastname = u.Client.Lastname,
                         Name = u.Client.Name,
-                        ZipCode = u.Client.ZipCode
+                        ZipCode = u.Client.ZipCode,
+                        Birthdate = u.Client.Birthdate,
+                        Id = u.Id,
 
                     }
 

@@ -30,7 +30,9 @@ namespace DesafioBibliotecaApi.Services
                 Document = client.Document,
                 Lastname = client.Lastname,
                 Name = client.Name,
-                ZipCode = client.ZipCode
+                ZipCode = client.ZipCode,
+                Id  = client.Id,
+                Birthdate = client.Birthdate
 
             };
 

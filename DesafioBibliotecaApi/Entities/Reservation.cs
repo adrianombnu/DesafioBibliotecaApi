@@ -8,7 +8,15 @@ namespace DesafioBibliotecaApi.Entities
     {
         public DateTime InitialDate { get; set; }
         public DateTime FinalDate { get; set; }
-        public List<Book> Books { get; set; }
-        public Client Client { get; set; }
+        public List<Guid> IdBooks { get; set; }
+        public Guid IdClient { get; set; }
+
+        public Reservation(DateTime initialDate, DateTime finalDate, List<Guid> idBooks, Guid idClient)
+        {
+            InitialDate = initialDate; 
+            FinalDate = finalDate;
+            IdBooks = idBooks;
+            IdClient = idClient;
+        }
     }
 }

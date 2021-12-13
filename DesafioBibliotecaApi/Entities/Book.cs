@@ -12,7 +12,9 @@ namespace DesafioBibliotecaApi.Entities
             Description = description;
             ReleaseYear = releaseYear;
             AuthorId = authorId;
+            QuantityAvailable = quantityInventory;
             QuantityInventory = quantityInventory;
+            
         }
 
         public string Name { get; set; }
@@ -29,6 +31,12 @@ namespace DesafioBibliotecaApi.Entities
             ReleaseYear = book.ReleaseYear;
             AuthorId = book.AuthorId;
             QuantityInventory= book.QuantityInventory;  
+
+        }
+
+        public void UpdateAvailable()
+        {
+            QuantityAvailable = --QuantityAvailable;
 
         }
 

@@ -105,6 +105,7 @@ namespace DesafioBibliotecaApi
             services.AddSingleton<ClientRepository>();
             services.AddSingleton<AdressRepository>();
             services.AddSingleton<BookRepository>();
+            services.AddSingleton<ReservationRepository>();
 
             services.AddTransient<LoginService>();
             services.AddTransient<CustumerService>();
@@ -113,6 +114,7 @@ namespace DesafioBibliotecaApi
             services.AddTransient<ClientService>();
             services.AddTransient<EmployeeService>();
             services.AddTransient<AuthorService>();
+            services.AddTransient<ReservationService>();
             services.AddTransient<JwtTokenService>();
         }
 

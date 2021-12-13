@@ -20,7 +20,8 @@ namespace DesafioBibliotecaApi.Controllers
             _bookService = bookService;
         }
 
-        [HttpPost, Authorize(Roles = "admin, functionary")]
+        //[HttpPost, Authorize(Roles = "admin, functionary")]
+        [HttpPost]
         public IActionResult Create([FromBody] NewBookDTO bookDTO)
         {
             bookDTO.Validar();
@@ -42,7 +43,8 @@ namespace DesafioBibliotecaApi.Controllers
                         
         }
 
-        [HttpGet, Authorize]
+        //[HttpGet, Authorize]
+        [HttpGet ]
         public IActionResult Get([FromQuery] string name, [FromQuery] int releaseYear, [FromQuery] string description, [FromQuery] int page, [FromQuery] int itens)
         {
             return Ok(_bookService.GetFilter(name, releaseYear, description, page, itens));

@@ -82,6 +82,19 @@ namespace DesafioBibliotecaApi.Repositorio
 
         }
 
+        public Book UpdateAvailable(Guid id)
+        {
+            var bookUpdate = _books.Where(a => a.Id == id).SingleOrDefault();
+
+            if (bookUpdate is null)
+                throw new Exception("Book not found.");
+
+            bookUpdate.UpdateAvailable();
+
+            return bookUpdate;
+
+        }
+
         public Book GetByName(string name)
         {
             return _books.Where(u => u.Name == name).FirstOrDefault();
