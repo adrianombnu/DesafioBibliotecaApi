@@ -27,6 +27,7 @@ namespace DesafioBibliotecaApi.Entities
             Nacionality = author.Nacionality;
             Age = author.Age;
 
+
         }
                 
     }

@@ -46,17 +46,44 @@ namespace DesafioBibliotecaApi.Services
         public IEnumerable<UserResultDTO> Get()
         {
             var users = _userRepository.Get();
-            
-            return users.Select(u =>
+            var clients = _clientRepository.Get();
+
+            var query = from user in users
+                        join client in clients on user.Id equals client.IdUser
+                        select new { Username = user.UserName, Role = user.Role, Id = user.Id, Client = client};
+                       
+
+            return query.Select(u =>
             {
                 return new UserResultDTO
                 {
                     Role = u.Role,
-                    Username = u.UserName,
-                    Id = u.Id                   
-            
-                };
+                    Username = u.Username,
+                    Id = u.Id,
+                    Client = new ClientDTO
+                    {
+                        Adress = new AdressDTO
+                        {
+                            Street = u.Client.Adress.Street,
+                            Complement = u.Client.Adress.Complement,
+                            District = u.Client.Adress.District,
+                            Location = u.Client.Adress.Location,
+                            State = u.Client.Adress.State
+                        },
+                        Age = u.Client.Age,
+                        Document = u.Client.Document,
+                        Lastname = u.Client.Lastname,
+                        Name = u.Client.Name,
+                        ZipCode = u.Client.ZipCode
+
+                    }
+
+            };
             });
+
+
+
+
 
         }
 

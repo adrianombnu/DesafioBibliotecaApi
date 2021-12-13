@@ -13,9 +13,20 @@ namespace DesafioBibliotecaApi.Repositorio
             _authors ??= new List<Author>();
         }
 
-        public IEnumerable<Author> Get()
+        public IEnumerable<Author> Get(string? name = null, string? nationality = null, int? age = null, int page = 1, int itens = 50)
         {
-            return _authors;
+            IEnumerable<Author> retorno = _authors;
+            
+            if (!String.IsNullOrEmpty(name))
+                retorno = retorno.Where(x => x.Name == name);
+
+            if (!String.IsNullOrEmpty(nationality))
+                retorno = retorno.Where(x => x.Nacionality == nationality);
+
+            if (age is not null && age > 0)
+                retorno = retorno.Where(x => x.Age == age);
+
+            return retorno.Skip((page - 1) * itens).Take(itens); ;
 
         }
 

@@ -28,13 +28,16 @@ namespace DesafioBibliotecaApi.Controllers
         [HttpPost, AllowAnonymous]
         public async Task<IActionResult> Cadastrar(NewUserDTO userDTO)
         {
+            userDTO.Validar();
+
+            if (!userDTO.Valido)
+                return BadRequest("User invalid!");
+
             var user = new User
             {
                 UserName = userDTO.Username,
                 Password = userDTO.Password
             };
-
-            _custumerService.Create(user);
 
             var client = new Client
             {
@@ -62,8 +65,49 @@ namespace DesafioBibliotecaApi.Controllers
                 client.Adress.Street = userDTO.Client.Adress.Street;
 
             }
-            
+
+            _custumerService.Create(user);
             return Created("", _clientService.Create(client));
+
+        }
+
+        //[HttpPut, Authorize]
+        [HttpPut]
+        public async Task<IActionResult> UpdateUser(UpdateUserDTO userDTO)
+        {
+            userDTO.Validar();
+
+            if (!userDTO.Valido)
+                return BadRequest("User invalid!");
+
+            var client = new Client
+            {
+                Name = userDTO.Client.Name,
+                Lastname = userDTO.Client.Lastname,
+                Age = userDTO.Client.Age,
+                Document = userDTO.Client.Document,
+                ZipCode = userDTO.Client.ZipCode,
+                IdUser = userDTO.Id
+            
+            };
+
+            if (userDTO.Client.Adress is null)
+            {
+                var responseAdress = await _adressService.FindAdress(userDTO.Client.ZipCode);
+                client.Adress = responseAdress;
+
+            }
+            else
+            {
+                client.Adress.District = userDTO.Client.Adress.District;
+                client.Adress.Complement = userDTO.Client.Adress.Complement;
+                client.Adress.State = userDTO.Client.Adress.State;
+                client.Adress.Location = userDTO.Client.Adress.Location;
+                client.Adress.Street = userDTO.Client.Adress.Street;
+
+            }
+
+            return Created("", _clientService.UpdateUser(client));
 
         }
 
@@ -74,13 +118,14 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        [HttpPut, AllowAnonymous, Route("login")]
+        [HttpPut, Authorize, Route("login")]
         public IActionResult Login([FromBody] UpdateLoginDTO loginDTO)
         {
             return Ok(_loginService.UpdateLogin(loginDTO.Username, loginDTO.PastPassword, loginDTO.NewPassword, loginDTO.ConfirmNewPassword));
 
         }
 
+        //[HttpGet, Authorize]
         [HttpGet]
         public IActionResult Get()
         {
@@ -88,12 +133,14 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
+        /*
         [HttpGet, Route("{id}/login")]
         public IActionResult Get(Guid id)
         {
             return Ok(_custumerService.Get(id));
 
         }
+        */
 
     }
 }

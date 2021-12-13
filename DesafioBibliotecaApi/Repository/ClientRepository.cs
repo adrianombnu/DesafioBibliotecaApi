@@ -13,9 +13,20 @@ namespace DesafioBibliotecaApi.Repositorio
             _clients ??= new List<Client>();
         }
 
-        public IEnumerable<Client> Get()
+        public IEnumerable<Client> Get(string? name = null, DateTime? birthdate = null, string? document = null, int page = 1, int itens = 50)
         {
-            return _clients;
+            IEnumerable<Client> retorno = _clients;
+
+            if (!String.IsNullOrEmpty(name))
+                retorno = retorno.Where(x => x.Name == name);
+
+            if (birthdate is not null)
+                retorno = retorno.Where(x => x.Birthdate == birthdate);
+
+            if (!String.IsNullOrEmpty(document))
+                retorno = retorno.Where(x => x.Document == document);
+
+            return retorno.Skip((page - 1) * itens).Take(itens);
 
         }
 
@@ -49,14 +60,14 @@ namespace DesafioBibliotecaApi.Repositorio
         }
 
 
-        public Client Update(Guid id, Client client)
+        public Client UpdateUser(Client client)
         {
-            var cli = _clients.Where(a => a.Id == id).SingleOrDefault();
+            var cli = _clients.Where(a => a.IdUser == client.IdUser).SingleOrDefault();
 
             if (cli is null)
                 throw new Exception("Client not found.");
 
-            //cli.Update(client);
+            cli.Update(client);
 
             return client;
 

@@ -34,42 +34,33 @@ namespace DesafioBibliotecaApi.Services
 
             return new BookDTO
             {
+                Id = bookCreated.Id,
                 Name = bookCreated.Name,
                 ReleaseYear = bookCreated.ReleaseYear,
                 Description = bookCreated.Description,
-                AuthorId = bookCreated.AuthorId
+                AuthorId = bookCreated.AuthorId,
+                QuantityInventory = bookCreated.QuantityInventory                
             };
 
         }
 
-        public IEnumerable<BookDTO> Get()
+        public IEnumerable<BookDTO> GetFilter(string? name = null, int? releaseYear = null, string? description = null, int page = 1, int itens = 50)
         {
-            var books = _bookRepository.Get();
+            var books = _bookRepository.Get(name, releaseYear, description, page, itens);
 
             return books.Select(a =>
             {
                 return new BookDTO
                 {
+                    Id = a.Id,
                     Name = a.Name,
                     ReleaseYear = a.ReleaseYear,
-                    Description = a.Description
+                    Description = a.Description,
+                    AuthorId = a.AuthorId,
+                    QuantityInventory = a.QuantityInventory
+                    
                 };
             });
-        }
-
-        public IEnumerable<BookDTO> GetFilter(string name, DateTime releaseYear, string description, int page, int itens)
-        {
-            var books = _bookRepository.Get();
-
-            return books.Select(a =>
-            {
-                return new BookDTO
-                {
-                    Name = a.Name,
-                    ReleaseYear = a.ReleaseYear,
-                    Description = a.Description
-                };
-            }).Where(x => x.Name == name || x.ReleaseYear == releaseYear || x.Description == description);
 
         }
 
@@ -82,7 +73,8 @@ namespace DesafioBibliotecaApi.Services
                 Name = book.Name,
                 ReleaseYear = book.ReleaseYear,
                 Description = book.Description,
-                AuthorId = book.AuthorId
+                AuthorId = book.AuthorId,
+                QuantityInventory = book.QuantityInventory
             };
         }
 
@@ -99,16 +91,16 @@ namespace DesafioBibliotecaApi.Services
 
             return new BookDTO
             {
+                Id = books.Id,
                 Name = books.Name,
                 ReleaseYear = books.ReleaseYear,
                 Description = books.Description,
-                AuthorId = books.AuthorId
-
+                AuthorId = books.AuthorId,
+                QuantityInventory = books.QuantityInventory
+                
             };
 
         }
-
         
-
     }
 }

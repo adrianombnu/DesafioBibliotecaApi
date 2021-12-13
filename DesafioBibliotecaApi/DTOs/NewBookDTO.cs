@@ -8,7 +8,7 @@ namespace DesafioBibliotecaApi.DTOs
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public DateTime ReleaseYear { get; set; }
+        public int ReleaseYear { get; set; }
         public Guid AuthorId { get; set; }
         public int QuantityInventory { get; set; }
 
@@ -23,6 +23,9 @@ namespace DesafioBibliotecaApi.DTOs
                 Valido = false;
 
             if (AuthorId.ToString().Length < 0)
+                Valido = false;
+
+            if (ReleaseYear <= 0)
                 Valido = false;
         }
 

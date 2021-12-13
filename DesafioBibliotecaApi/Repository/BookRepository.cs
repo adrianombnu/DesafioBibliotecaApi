@@ -13,9 +13,20 @@ namespace DesafioBibliotecaApi.Repositorio
             _books ??= new List<Book>();
         }
 
-        public IEnumerable<Book> Get()
+        public IEnumerable<Book> Get(string? name = null, int? releaseYear = null, string? description = null, int page = 1, int itens = 50)
         {
-            return _books;
+            IEnumerable<Book> retorno = _books;
+
+            if (!String.IsNullOrEmpty(name))
+                retorno = retorno.Where(x => x.Name == name);
+
+            if (releaseYear > 0)
+                retorno = retorno.Where(x => x.ReleaseYear == releaseYear);
+
+            if (!String.IsNullOrEmpty(description))
+                retorno = retorno.Where(x => x.Description == description);
+
+            return retorno.Skip((page - 1) * itens).Take(itens);
 
         }
 

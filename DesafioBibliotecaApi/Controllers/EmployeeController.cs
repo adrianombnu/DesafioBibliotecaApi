@@ -5,6 +5,7 @@ using DesafioBibliotecaApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DesafioBibliotecaApi.Controllers
@@ -68,6 +69,46 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
+        //[HttpPut, Authorize]
+        [HttpPut]
+        public async Task<IActionResult> UpdateUser(UpdateUserDTO userDTO)
+        {
+            userDTO.Validar();
+
+            if (!userDTO.Valido)
+                return BadRequest("User invalid!");
+
+            var client = new Client
+            {
+                Name = userDTO.Client.Name,
+                Lastname = userDTO.Client.Lastname,
+                Age = userDTO.Client.Age,
+                Document = userDTO.Client.Document,
+                ZipCode = userDTO.Client.ZipCode,
+                IdUser = userDTO.Id
+
+            };
+
+            if (userDTO.Client.Adress is null)
+            {
+                var responseAdress = await _adressService.FindAdress(userDTO.Client.ZipCode);
+                client.Adress = responseAdress;
+
+            }
+            else
+            {
+                client.Adress.District = userDTO.Client.Adress.District;
+                client.Adress.Complement = userDTO.Client.Adress.Complement;
+                client.Adress.State = userDTO.Client.Adress.State;
+                client.Adress.Location = userDTO.Client.Adress.Location;
+                client.Adress.Street = userDTO.Client.Adress.Street;
+
+            }
+
+            return Created("", _clientService.UpdateUser(client));
+
+        }
+
         [HttpPost, AllowAnonymous, Route("login")]
         public IActionResult Login([FromBody] EmployeeLoginDTO loginDTO)
         {
@@ -75,21 +116,24 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        [HttpPut, AllowAnonymous, Route("login")]
+        [HttpPut, Authorize, Route("login")]
         public IActionResult Login([FromBody] UpdateLoginDTO loginDTO)
         {
             return Ok(_loginService.UpdateLogin(loginDTO.Username, loginDTO.PastPassword, loginDTO.NewPassword, loginDTO.ConfirmNewPassword));
 
         }
 
+        //[HttpGet, Authorize]
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult Get([FromQuery] string name, [FromQuery] DateTime birthdate, [FromQuery] string document, [FromQuery] int page, [FromQuery] int itens)
         {
-            return Ok(_employeeService.Get());
+            var users = _employeeService.GetFilter(name, birthdate, document, page, itens);
+            var resultados = users.Skip((page - 1) * itens).Take(itens);
+            return Ok(resultados);
 
         }
 
-        [HttpGet, Route("{id}/login")]
+        [HttpGet, Authorize(Roles = "admin, funcionario"), Route("{id}/login")]
         public IActionResult Get(Guid id)
         {
             return Ok(_employeeService.Get(id));

@@ -20,8 +20,7 @@ namespace DesafioBibliotecaApi.Controllers
             _bookService = bookService;
         }
 
-        //[HttpPost, Authorize(Roles = "admin, functionary")]
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "admin, functionary")]
         public IActionResult Create([FromBody] NewBookDTO bookDTO)
         {
             bookDTO.Validar();
@@ -41,19 +40,16 @@ namespace DesafioBibliotecaApi.Controllers
                 return BadRequest("Error creating author : " + ex.Message);
             }      
                         
-        }        
-
-        
-        [HttpGet, Authorize]
-        public IActionResult Get([FromQuery] string name, [FromQuery] DateTime releaseYear, [FromQuery] string description, [FromQuery] int page, [FromQuery] int itens)
-        {
-            var authors = _bookService.GetFilter(name, releaseYear, description, page, itens);
-            var resultados = authors.Skip((page - 1) * itens).Take(itens);
-            return Ok(resultados);
-
         }
 
-        [HttpGet, Route("{id}/authors")]
+        [HttpGet, Authorize]
+        public IActionResult Get([FromQuery] string name, [FromQuery] int releaseYear, [FromQuery] string description, [FromQuery] int page, [FromQuery] int itens)
+        {
+            return Ok(_bookService.GetFilter(name, releaseYear, description, page, itens));
+                        
+        }
+
+        [HttpGet, Authorize, Route("{id}/authors")]
         public IActionResult Get(Guid id)
         {
             return Ok(_bookService.Get(id));

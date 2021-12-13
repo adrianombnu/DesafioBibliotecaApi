@@ -3,7 +3,7 @@ using System;
 
 namespace DesafioBibliotecaApi.DTOs
 {
-    public class ClientDTO
+    public class UpdateClientDTO
     {
         public string Name { get; set; }
         public string Lastname { get; set; }

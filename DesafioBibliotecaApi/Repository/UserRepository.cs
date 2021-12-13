@@ -36,7 +36,7 @@ namespace DesafioBibliotecaApi.Repositorio
 
         public User Create(User user)
         {
-            user.Id = Guid.NewGuid();
+            //user.Id = Guid.NewGuid();
             if (_users.TryAdd(user.Id, user))
                 return user;
 
