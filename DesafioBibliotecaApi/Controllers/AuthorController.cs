@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
+using System.Security.Claims;
 
 namespace DesafioBibliotecaApi.Controllers
 {
@@ -19,8 +20,8 @@ namespace DesafioBibliotecaApi.Controllers
             _authorService = authorService;
         }
 
-        //[HttpPost, Authorize(Roles = "admin, functionary")]
-        [HttpPost]
+        //[HttpPost, Authorize(Roles = "admin, functionary"), Route("authors")]
+        [HttpPost, Route("authors")]
         public IActionResult Create([FromBody] NewAuthorDTO authorDTO)
         {
             authorDTO.Validar();
@@ -43,10 +44,20 @@ namespace DesafioBibliotecaApi.Controllers
         }
 
 
-        //[HttpGet, Authorize]
-        [HttpGet]
+        //[HttpGet, Authorize, Route("authors")]
+        [HttpGet, Route("authors")]
         public IActionResult Get([FromQuery] string? name, [FromQuery] string? nationality, [FromQuery] int? age, [FromQuery] int page = 1, [FromQuery] int itens = 50)
         {
+            try
+            {
+                var userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("User not authenticated");
+            }
+
             return Ok(_authorService.GetFilter(name, nationality, age, page, itens));
             
         }
@@ -54,6 +65,17 @@ namespace DesafioBibliotecaApi.Controllers
         [HttpGet, Route("{id}/authors")]
         public IActionResult Get(Guid id)
         {
+            try
+            {
+                var userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("User not authenticated");
+            }
+            
+
             return Ok(_authorService.Get(id));
 
         }
@@ -67,7 +89,7 @@ namespace DesafioBibliotecaApi.Controllers
             return Ok("Author deleted with success.");
         }
 
-        [HttpPut, Authorize(Roles = "admin, functionary"), Route("{id}/authors")]
+        [HttpPut, Authorize(Roles = "admin, functionary"), Route("authors")]
         public IActionResult UpdateAuthor(Guid id, NewAuthorDTO authorDTO)
         {
             authorDTO.Validar();
@@ -88,6 +110,7 @@ namespace DesafioBibliotecaApi.Controllers
             }
 
         }
+
 
     }
 }

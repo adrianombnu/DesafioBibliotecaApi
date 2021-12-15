@@ -28,6 +28,7 @@ namespace DesafioBibliotecaApi.Services
                 {
                     Subject = new ClaimsIdentity(new Claim[]
                     {
+                    new Claim(ClaimTypes.Sid,  user.Id.ToString()),
                     new Claim(ClaimTypes.Role, user.Role),
                     new Claim(ClaimTypes.Name, user.UserName)
                     }),
@@ -42,7 +43,8 @@ namespace DesafioBibliotecaApi.Services
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(new Claim[]
-                    {                    
+                    {
+                        new Claim(ClaimTypes.Sid,  user.Id.ToString()),
                         new Claim(ClaimTypes.Name, user.UserName)
                     }),
                     Expires = DateTime.UtcNow.AddMinutes(timelLimitToken),

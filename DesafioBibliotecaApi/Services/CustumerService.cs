@@ -43,6 +43,7 @@ namespace DesafioBibliotecaApi.Services
 
         }
 
+        /*
         public IEnumerable<UserResultDTO> Get()
         {
             var users = _userRepository.Get();
@@ -84,27 +85,37 @@ namespace DesafioBibliotecaApi.Services
             });
 
         }
+        */
 
-        public ClientDTO Get(Guid id)
+        public UserResultDTO Get(Guid id)
         {
             var user = _userRepository.Get(id);
             var client = _clientRepository.GetIdUser(user.Id);
 
-            return new ClientDTO
+            return new UserResultDTO
             {
-                Adress = new AdressDTO
+                Role = user.Role,
+                Username = user.UserName,
+                Id = user.Id,
+                Client = new ClientDTO
                 {
-                    Street = client.Adress.Street,
-                    Complement = client.Adress.Complement,
-                    District = client.Adress.District,
-                    Location = client.Adress.Location,
-                    State = client.Adress.State
-                },
-                Age = client.Age,
-                Document = client.Document,
-                Lastname = client.Lastname,
-                Name = client.Name,
-                ZipCode = client.ZipCode
+                    Adress = new AdressDTO
+                    {
+                        Street = client.Adress.Street,
+                        Complement = client.Adress.Complement,
+                        District = client.Adress.District,
+                        Location = client.Adress.Location,
+                        State = client.Adress.State
+                    },
+                    Age = client.Age,
+                    Document = client.Document,
+                    Lastname = client.Lastname,
+                    Name = client.Name,
+                    ZipCode = client.ZipCode,
+                    Birthdate = client.Birthdate,
+                    Id = client.Id
+
+                }
 
             };
 

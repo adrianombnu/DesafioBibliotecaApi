@@ -5,6 +5,8 @@ using DesafioBibliotecaApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace DesafioBibliotecaApi.Controllers
@@ -25,7 +27,7 @@ namespace DesafioBibliotecaApi.Controllers
             _adressService = adressService;
         }
 
-        [HttpPost, AllowAnonymous]
+        [HttpPost, AllowAnonymous, Route("users")]
         public async Task<IActionResult> Cadastrar(NewUserDTO userDTO)
         {
             userDTO.Validar();
@@ -79,8 +81,8 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        //[HttpPut, Authorize]
-        [HttpPut]
+        //[HttpPut, Authorize, Route("users")]
+        [HttpPut, Route("users")]
         public async Task<IActionResult> UpdateUser(UpdateUserDTO userDTO)
         {
             userDTO.Validar();
@@ -133,29 +135,32 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        [HttpPut, Authorize, Route("login")]
+        [HttpPut, Authorize, Route("reset_password")]
         public IActionResult Login([FromBody] UpdateLoginDTO loginDTO)
         {
             return Ok(_loginService.UpdateLogin(loginDTO.Username, loginDTO.PastPassword, loginDTO.NewPassword, loginDTO.ConfirmNewPassword));
 
         }
 
-        //[HttpGet, Authorize]
-        [HttpGet]
+        //[HttpGet, Authorize, Route("users")]
+        [HttpGet, Route("users")]
         public IActionResult Get()
         {
-            return Ok(_custumerService.Get());
+            var userId = string.Empty;
+
+            try
+            {
+                userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("User not authenticated");
+            }
+           
+            return Ok(_custumerService.Get(Guid.Parse(userId)));
 
         }
-
-        /*
-        [HttpGet, Route("{id}/login")]
-        public IActionResult Get(Guid id)
-        {
-            return Ok(_custumerService.Get(id));
-
-        }
-        */
 
     }
 }

@@ -24,7 +24,7 @@ namespace DesafioBibliotecaApi.Repositorio
             if (_users.TryGetValue(id, out var user))
                 return user;
 
-            throw new Exception("Usuário não encontrado.");
+            throw new Exception("User not found.");
 
         }
         

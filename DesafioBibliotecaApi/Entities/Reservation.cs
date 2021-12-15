@@ -21,6 +21,14 @@ namespace DesafioBibliotecaApi.Entities
             IdBooks = idBooks;
             IdClient = idClient;
         }
+        public Reservation(DateTime startDate, DateTime endDate, List<Guid> idBooks)
+        {
+            StartDate = startDate;
+            EndDate = endDate;
+            StatusReservation = EStatusReservation.InProgress;
+            IdBooks = idBooks;
+            
+        }
 
         public void CancelReservation()
         {

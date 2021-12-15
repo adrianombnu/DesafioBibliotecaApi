@@ -5,6 +5,7 @@ namespace DesafioBibliotecaApi.Entidades
 {
     public class User : Base
     {
+        public static object Claims { get; internal set; }
         public string UserName { get; set; }
         public string Password { get; set; }
         public string Role { get; set; }

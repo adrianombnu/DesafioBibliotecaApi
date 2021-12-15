@@ -116,6 +116,7 @@ namespace DesafioBibliotecaApi
             services.AddTransient<AuthorService>();
             services.AddTransient<ReservationService>();
             services.AddTransient<JwtTokenService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

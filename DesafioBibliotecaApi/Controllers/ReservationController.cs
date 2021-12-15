@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
+using System.Security.Claims;
 
 namespace DesafioBibliotecaApi.Controllers
 {
@@ -19,7 +20,7 @@ namespace DesafioBibliotecaApi.Controllers
             _reservationService = reservationService;
         }
 
-        //[HttpPost, Authorize]
+        //[HttpPost, Authorize, Route("reservations")]
         [HttpPost, Route("reservations")]
         public IActionResult Create([FromBody] NewReservationDTO reservationDTO)
         {
@@ -38,11 +39,11 @@ namespace DesafioBibliotecaApi.Controllers
             catch (Exception ex)
             {
                 return BadRequest("Error creating reservation : " + ex.Message);
-            }      
-                        
+            }
+
         }
 
-        //[HttpPost, Authorize]
+        //[HttpPost, Authorize, Route("reservations")]
         [HttpPut, Route("reservations")]
         public IActionResult Update([FromBody] UpdateReservationDTO reservationDTO)
         {
@@ -53,7 +54,7 @@ namespace DesafioBibliotecaApi.Controllers
 
             try
             {
-                var reservation = new Reservation(reservationDTO.StartDate, reservationDTO.EndDate, reservationDTO.idBooks, reservationDTO.IdClient);
+                var reservation = new Reservation(reservationDTO.StartDate, reservationDTO.EndDate, reservationDTO.idBooks);
 
                 return Created("", _reservationService.Update(reservationDTO.Id, reservation));
 
@@ -64,32 +65,44 @@ namespace DesafioBibliotecaApi.Controllers
             }
 
         }
-                
-        //[HttpGet, Authorize]
+
+        //[HttpGet, Authorize, Route("reservations")]
         [HttpGet, Route("reservations")]
         public IActionResult Get([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] string? author, [FromQuery] string? bookName, [FromQuery] int page = 1, [FromQuery] int itens = 50)
         {
             return Ok(_reservationService.GetFilter(startDate, endDate, author, bookName, page, itens));
-            
-        }
-        
-        //[HttpGet, Authorize, Route("{idClient}/reservations")]
-        [HttpGet, Route("{idClient}/reservations")]
-        public IActionResult Get(Guid idClient)
-        {   
-            return Ok(_reservationService.Get(idClient));
 
         }
 
-        //[HttpPost, Authorize, Route("{idReservation}/reservations/cancel")]
-        [HttpPost, Route("{idReservation}/reservations/cancel")]
+        //[HttpGet, Authorize, Route("reservations")]
+        [HttpGet, Route("reservations/customer")]
+        public IActionResult Get()
+        {
+            var userId = string.Empty;
+
+            try
+            {
+                userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("User not authenticated");
+            }
+
+            return Ok(_reservationService.Get(Guid.Parse(userId)));
+
+        }
+
+        //[HttpPost, Authorize, Route("reservations/cancel{idReservation}]
+        [HttpPost, Route("reservations/cancel/{idReservation}")]
         public IActionResult CancelReservation(Guid idReservation)
         {
             return Ok(_reservationService.CancelReservation(idReservation));
 
         }
 
-        //[HttpPost, Authorize, Route("/reservations/finalize/{idReservation}")]
+        //[HttpPost, Authorize, Route("/reservations/finalize{idReservation}")]
         [HttpPost, Route("/reservations/finalize/{idReservation}")]
         public IActionResult FinalizeReservation(Guid idReservation)
         {

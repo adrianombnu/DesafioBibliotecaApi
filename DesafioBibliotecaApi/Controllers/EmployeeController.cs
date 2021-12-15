@@ -26,7 +26,7 @@ namespace DesafioBibliotecaApi.Controllers
             _adressService = adressService;
         }
 
-        [HttpPost, AllowAnonymous]
+        [HttpPost, AllowAnonymous, Route("users")]
         public async Task<IActionResult> Cadastrar(NewUserEmployeeDTO userEmployeeDTO)
         {
             userEmployeeDTO.Validar();
@@ -80,8 +80,8 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        //[HttpPut, Authorize]
-        [HttpPut]
+        //[HttpPut, Authorize, Route("users")]
+        [HttpPut, Route("users")]
         public async Task<IActionResult> UpdateUser(UpdateUserDTO userDTO)
         {
             userDTO.Validar();
@@ -135,15 +135,15 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        [HttpPut, Authorize, Route("login")]
+        [HttpPut, Authorize, Route("reset_password")]
         public IActionResult Login([FromBody] UpdateLoginDTO loginDTO)
         {
             return Ok(_loginService.UpdateLogin(loginDTO.Username, loginDTO.PastPassword, loginDTO.NewPassword, loginDTO.ConfirmNewPassword));
 
         }
 
-        //[HttpGet, Authorize]
-        [HttpGet]
+        //[HttpGet, Authorize, Route("users")]
+        [HttpGet, Route("users")]
         public IActionResult Get([FromQuery] string? name = null, [FromQuery] DateTime? birthdate = null, [FromQuery] string? document = null, [FromQuery] int page = 1, [FromQuery] int itens = 50)
         {
             var users = _employeeService.GetFilter(name, birthdate, document, page, itens);
@@ -151,7 +151,7 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        [HttpGet, Authorize(Roles = "admin, funcionario"), Route("{id}/login")]
+        [HttpGet, Authorize(Roles = "admin, funcionario"), Route("users/{id}")]
         public IActionResult Get(Guid id)
         {
             return Ok(_employeeService.Get(id));

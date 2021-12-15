@@ -27,7 +27,6 @@ namespace DesafioBibliotecaApi.Services
         {
             foreach (var l in reservation.IdBooks)
             {
-
                 var book = _bookRepository.Get(l);
 
                 if (book == null)
@@ -88,11 +87,6 @@ namespace DesafioBibliotecaApi.Services
 
             }
 
-            var client = _clientRepository.Get(reservation.IdClient);
-
-            if (client == null)
-                throw new Exception("Client not found");
-
             if ((int)reservation.EndDate.Subtract(reservation.StartDate).TotalDays > 5)
                 throw new Exception("Minimum limit for a 5-day booking.");
 
@@ -117,9 +111,14 @@ namespace DesafioBibliotecaApi.Services
 
         }
 
-        public IEnumerable<ReservationDTO> Get(Guid idClient)
+        public IEnumerable<ReservationDTO> Get(Guid idUser)
         {
-            var reservations = _reservationRepository.Get(idClient);
+            var client = _clientRepository.GetIdUser(idUser);
+
+            if (client == null)
+                throw new Exception("Client not found");
+
+            var reservations = _reservationRepository.Get(client.Id);
 
             return reservations.Select(a =>
             {
@@ -134,7 +133,6 @@ namespace DesafioBibliotecaApi.Services
 
                 };
             });
-
         }
 
         public bool CancelReservation(Guid idReservation)
