@@ -62,7 +62,7 @@ namespace DesafioBibliotecaApi.Controllers
             
         }
 
-        [HttpGet, Route("{id}/authors")]
+        [HttpGet, Authorize, Route("{id}/authors")]
         public IActionResult Get(Guid id)
         {
             try

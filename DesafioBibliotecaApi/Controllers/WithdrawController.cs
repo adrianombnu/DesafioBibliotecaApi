@@ -11,22 +11,22 @@ using System.Security.Claims;
 namespace DesafioBibliotecaApi.Controllers
 {
     [ApiController, Route("[controller]")]
-    public class ReservationController : ControllerBase
+    public class WithdrawController : ControllerBase
     {
-        private readonly ReservationService _reservationService;
+        private readonly WithdrawService _withdrawService;
 
-        public ReservationController(ReservationService reservationService)
+        public WithdrawController(WithdrawService withdrawService)
         {
-            _reservationService = reservationService;
+            _withdrawService = withdrawService;
         }
 
-        //[HttpPost, Authorize, Route("reservations")]
-        [HttpPost, Route("reservations")]
-        public IActionResult Create([FromBody] NewReservationDTO reservationDTO)
+        //[HttpPost, Authorize, Route("withdraw")]
+        [HttpPost, Route("withdraw")]
+        public IActionResult Create([FromBody] NewWithdrawDTO withdrawDTO)
         {
-            reservationDTO.Validar();
+            withdrawDTO.Validar();
 
-            if (!reservationDTO.Valido)
+            if (!withdrawDTO.Valido)
                 return BadRequest("Invalid reservation!");
 
             try
@@ -43,8 +43,8 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        //[HttpPut, Authorize, Route("reservations")]
-        [HttpPut, Route("reservations")]
+        //[HttpPost, Authorize, Route("withdraw/finalize/{id}")]
+        [HttpPost, Route("withdraw/finalize/{id}")]
         public IActionResult Update([FromBody] UpdateReservationDTO reservationDTO)
         {
             reservationDTO.Validar();
@@ -56,7 +56,7 @@ namespace DesafioBibliotecaApi.Controllers
             {
                 var reservation = new Reservation(reservationDTO.StartDate, reservationDTO.EndDate, reservationDTO.idBooks);
 
-                return Created("", _reservationService.Update(reservationDTO.Id, reservation));
+                return Created("", _withdrawService.Update(reservationDTO.Id, reservation));
 
             }
             catch (Exception ex)
@@ -66,23 +66,21 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        //[HttpGet, Authorize, Route("reservations")]
-        [HttpGet, Route("reservations")]
+        //[HttpGet, Authorize, Route("withdraw")]
+        [HttpGet, Route("withdraw")]
         public IActionResult Get([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] string? author, [FromQuery] string? bookName, [FromQuery] int page = 1, [FromQuery] int itens = 50)
         {
-            return Ok(_reservationService.GetFilter(startDate, endDate, author, bookName, page, itens));
+            return Ok(_withdrawService.GetFilter(startDate, endDate, author, bookName, page, itens));
 
         }
 
-        //[HttpGet, Authorize, Route("reservations")]
-        [HttpGet, Route("reservations/customer")]
-        public IActionResult Get()
+        //[HttpGet, Authorize, Route("{id}/withdraw")]
+        [HttpGet, Route("{id}/withdraw")]
+        public IActionResult Get(Guid id)
         {
-            var userId = string.Empty;
-
             try
             {
-                userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
+                var userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
 
             }
             catch (Exception ex)
@@ -90,24 +88,10 @@ namespace DesafioBibliotecaApi.Controllers
                 return BadRequest("User not authenticated");
             }
 
-            return Ok(_reservationService.Get(Guid.Parse(userId)));
+
+            return Ok(_withdrawService.Get(id));
 
         }
 
-        //[HttpPost, Authorize, Route("reservations/cancel{idReservation}]
-        [HttpPost, Route("reservations/cancel/{idReservation}")]
-        public IActionResult CancelReservation(Guid idReservation)
-        {
-            return Ok(_reservationService.CancelReservation(idReservation));
-
-        }
-
-        //[HttpPost, Authorize, Route("/reservations/finalize{idReservation}")]
-        [HttpPost, Route("/reservations/finalize/{idReservation}")]
-        public IActionResult FinalizeReservation(Guid idReservation)
-        {
-            return Ok(_reservationService.FinalizeReservation(idReservation));
-
-        }
     }
 }

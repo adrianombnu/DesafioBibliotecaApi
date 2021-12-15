@@ -14,26 +14,45 @@ namespace DesafioBibliotecaApi.Services
         private readonly BookRepository _bookRepository;
         private readonly AuthorRepository _authorRepository;
         private readonly ClientRepository _clientRepository;
+        private readonly FacedService _facedService;
 
-        public ReservationService(ReservationRepository repository, BookRepository bookRepository, AuthorRepository authorRepository, ClientRepository clientRepository)
+        public ReservationService(ReservationRepository repository,
+                                  BookRepository bookRepository,
+                                  AuthorRepository authorRepository,
+                                  ClientRepository clientRepository,
+                                  FacedService facedService)
         {
             _reservationRepository = repository;
             _bookRepository = bookRepository;
             _clientRepository = clientRepository;
             _authorRepository = authorRepository;
+            _facedService = facedService;
+
         }
 
         public ReservationDTO Create(Reservation reservation)
         {
-            foreach (var l in reservation.IdBooks)
+            if(reservation.StartDate.Date < DateTime.Now.Date)
+                throw new Exception("Start data must be greater than: " + DateTime.Now.ToString("dd/MM/yyyy"));
+
+            if (reservation.EndDate.Date < reservation.StartDate.Date)
+                throw new Exception("End data must be greater than: " + reservation.StartDate.ToString("dd/MM/yyyy"));
+
+            foreach (var b in reservation.IdBooks)
             {
-                var book = _bookRepository.Get(l);
+                var book = _bookRepository.Get(b);
 
                 if (book == null)
                     throw new Exception("Book not found");
 
-                if (book.QuantityAvailable == 0)
-                    throw new Exception("Book not available");
+                /*var quantityReserved = FindQuantityReserved(book.Id, reservation.StartDate, reservation.EndDate);
+                var quantityWithdraw = _withdrawService.FindQuantityReserved(book.Id, reservation.StartDate, reservation.EndDate);
+                */
+
+                var quantityAvailable = _facedService.Available(book.Id, reservation.StartDate, reservation.EndDate);
+
+                if (quantityAvailable >= book.QuantityInventory)
+                    throw new Exception("Book " + book.Name + " not available for the period informed");
 
             }
 
@@ -42,16 +61,10 @@ namespace DesafioBibliotecaApi.Services
             if (client == null)
                 throw new Exception("Client not found");
 
-            if ((int)reservation.EndDate.Subtract(reservation.StartDate).TotalDays > 5)
+            if ((int)reservation.EndDate.Subtract(reservation.StartDate).TotalDays < 5)
                 throw new Exception("Minimum limit for a 5-day booking.");
 
             var reservationCreated = _reservationRepository.Create(reservation);
-
-            foreach (var l in reservation.IdBooks)
-            {
-                _bookRepository.UpdateAvailable(l, false);
-
-            }
 
             return new ReservationDTO
             {
@@ -67,36 +80,28 @@ namespace DesafioBibliotecaApi.Services
 
         public ReservationDTO Update(Guid idReservation, Reservation reservation)
         {
-            var reserve = _reservationRepository.GetById(idReservation);
-
-            foreach (var l in reserve.IdBooks)
+            foreach (var b in reservation.IdBooks)
             {
-                _bookRepository.UpdateAvailable(l, true);
-
-            }
-
-            foreach (var l in reservation.IdBooks)
-            {
-                var book = _bookRepository.Get(l);
+                var book = _bookRepository.Get(b);
 
                 if (book == null)
                     throw new Exception("Book not found");
 
-                if (book.QuantityAvailable == 0)
-                    throw new Exception("Book not available");
+                /*var quantityReserved = FindQuantityReserved(book.Id, reservation.StartDate, reservation.EndDate);
+                var quantityWithdraw = _withdrawService.FindQuantityReserved(book.Id, reservation.StartDate, reservation.EndDate);
+                */
 
+                var quantityAvailable = _facedService.Available(book.Id, reservation.StartDate, reservation.EndDate);
+
+                if (quantityAvailable >= book.QuantityInventory)
+                    throw new Exception("Book " + book.Name + " not available for the period informed");
+                
             }
 
-            if ((int)reservation.EndDate.Subtract(reservation.StartDate).TotalDays > 5)
+            if ((int)reservation.EndDate.Subtract(reservation.StartDate).TotalDays < 5)
                 throw new Exception("Minimum limit for a 5-day booking.");
 
             var reservationCreated = _reservationRepository.Update(idReservation, reservation);
-
-            foreach (var l in reservation.IdBooks)
-            {
-                _bookRepository.UpdateAvailable(l, false);
-
-            }
 
             return new ReservationDTO
             {
@@ -175,26 +180,22 @@ namespace DesafioBibliotecaApi.Services
             {
                 var myBooks = new List<BookFilterDTO>();
 
-                foreach (var c in allReservations)
+                foreach (var d in l.IdBooks)
                 {
-                    foreach (var d in c.IdBooks)
+                    var book = _bookRepository.Get(d);
+                    var authorBook = _authorRepository.Get(book.AuthorId);
+
+                    myBooks.Add(new BookFilterDTO
                     {
-                        var book = _bookRepository.Get(d);
-                        var authorBook = _authorRepository.Get(book.AuthorId);
-
-                        myBooks.Add(new BookFilterDTO
+                        Name = book.Name,
+                        Id = book.Id,
+                        Author = new AuthorFilterDTO
                         {
-                            Name = book.Name,
-                            Id = book.Id,
-                            Author = new AuthorFilterDTO
-                            {
-                                Name = authorBook.Name,
-                                Lastname = authorBook.Lastname,
-                                Id = authorBook.Id
-                            }
-                        });
-
-                    }
+                            Name = authorBook.Name,
+                            Lastname = authorBook.Lastname,
+                            Id = authorBook.Id
+                        }
+                    });
 
                 }
 
@@ -210,9 +211,9 @@ namespace DesafioBibliotecaApi.Services
                 });
 
             }
-            
-            if(startDate.HasValue)
-                myReservations.Where(x => x.StartDate.ToString("MM/dd/yyyy") ==  startDate.Value.ToString("MM/dd/yyyy"));
+
+            if (startDate.HasValue)
+                myReservations.Where(x => x.StartDate.ToString("MM/dd/yyyy") == startDate.Value.ToString("MM/dd/yyyy"));
 
             if (endDate.HasValue)
                 myReservations.Where(x => x.EndDate.ToString("MM/dd/yyyy") == endDate.Value.ToString("MM/dd/yyyy"));
@@ -230,7 +231,7 @@ namespace DesafioBibliotecaApi.Services
         public static DateTime ValidateLastWorkingDay(DateTime date)
         {
             var nextDay = true;
-            
+
             do
             {
                 date.AddDays(-1);
@@ -242,6 +243,34 @@ namespace DesafioBibliotecaApi.Services
 
             return date;
 
+        }
+
+        public int FindQuantityReserved(Guid idBook, DateTime startDate, DateTime endDate)
+        {
+            var allReservations = _reservationRepository.GetByPeriod(startDate, endDate, idBook);
+            var count = 0;
+
+            foreach (var r in allReservations)
+            {
+                foreach (var b in r.IdBooks)
+                {
+                    if (b == idBook)
+                        count++;
+                }
+
+            }
+
+            return count;
+        }
+
+        public bool FindPendenteReservation(Guid idBook, DateTime startDate, DateTime endDate, Guid idClient)
+        {
+            var allReservations = _reservationRepository.GetPendentReservationByPeriod(startDate, endDate, idBook, idClient);
+
+            if (allReservations.Count() > 0)
+                return true;
+            else
+                return false;
         }
 
     }

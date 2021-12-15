@@ -1,4 +1,5 @@
 ﻿using DesafioBibliotecaApi.Entities;
+using DesafioBibliotecaApi.Enumerados;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,24 +65,6 @@ namespace DesafioBibliotecaApi.Repository
 
         }
 
-        public IEnumerable<Reservation> GetFilter(DateTime? startDate = null, DateTime? endDate = null, string? author = null, string? bookName = null, int page = 1, int itens = 50)
-        {
-            IEnumerable<Reservation> retorno = _reservations;
-
-            /*
-            if (!String.IsNullOrEmpty(author))
-                retorno = retorno.Where(x => x.A == name);
-
-            if (!String.IsNullOrEmpty(nationality))
-                retorno = retorno.Where(x => x.Nacionality == nationality);
-
-            if (age is not null && age > 0)
-                retorno = retorno.Where(x => x.Age == age);
-            */
-            return retorno.Skip((page - 1) * itens).Take(itens);
-
-        }
-
         public Reservation GetById(Guid idReservation)
         {
             var reservation = _reservations.Where(a => a.Id == idReservation).SingleOrDefault();
@@ -97,5 +80,18 @@ namespace DesafioBibliotecaApi.Repository
             return _reservations;
 
         }
+
+        public IEnumerable<Reservation> GetByPeriod(DateTime starDate, DateTime endDate, Guid idBook)
+        {
+            return _reservations.Where(a => a.StartDate.Date >= starDate.Date && a.EndDate.Date <= endDate.Date && a.StatusReservation == EStatusReservation.InProgress).Where(x => x.IdBooks.Any(y => y == idBook));
+            
+        }
+
+        public IEnumerable<Reservation> GetPendentReservationByPeriod(DateTime starDate, DateTime endDate, Guid idBook, Guid idClient)
+        {
+            return _reservations.Where(a => a.IdClient == idClient && a.StartDate.Date >= starDate.Date && a.EndDate.Date <= endDate.Date && a.StatusReservation == EStatusReservation.InProgress).Where(x => x.IdBooks.Any(y => y == idBook));
+
+        }
+
     }
 }

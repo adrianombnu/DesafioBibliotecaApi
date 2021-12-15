@@ -1,23 +1,19 @@
-﻿using DesafioBibliotecaApi.Entidades;
+﻿using DesafioBibliotecaApi.Entities;
 using DesafioBibliotecaApi.Enumerados;
 using System;
 using System.Collections.Generic;
 
-namespace DesafioBibliotecaApi.Entities
+namespace DesafioBibliotecaApi.DTOs
 {
-    public class Withdraw : Base
+    public class WithdrawDTO 
     {
+        public Guid Id { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public List<Book> Books { get; set; }
         public Guid IdClient { get; set; }
         public EStatusWithdraw StatusWithdraw { get; set; }
 
-        public void FinalizeReservation()
-        {
-            StatusWithdraw = EStatusWithdraw.Closed;
-
-        }
 
     }
 }
