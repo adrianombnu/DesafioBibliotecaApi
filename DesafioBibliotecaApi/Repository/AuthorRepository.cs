@@ -87,6 +87,11 @@ namespace DesafioBibliotecaApi.Repositorio
 
         }
 
+        public IEnumerable<Author> GetAll()
+        {
+            return _authors;
+
+        }
     }
 
 }

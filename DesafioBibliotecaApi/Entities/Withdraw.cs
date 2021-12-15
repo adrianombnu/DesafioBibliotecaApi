@@ -6,8 +6,8 @@ namespace DesafioBibliotecaApi.Entities
 {
     public class Withdraw : Base
     {
-        public DateTime InitialDate { get; set; }
-        public DateTime FinalDate { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public List<Book> Books { get; set; }
         public Guid IdClient { get; set; }
 

@@ -45,7 +45,7 @@ namespace DesafioBibliotecaApi.Controllers
 
         //[HttpGet, Authorize]
         [HttpGet]
-        public IActionResult Get([FromQuery] string name, [FromQuery] string nationality, [FromQuery] int age, [FromQuery] int page, [FromQuery] int itens)
+        public IActionResult Get([FromQuery] string? name, [FromQuery] string? nationality, [FromQuery] int? age, [FromQuery] int page = 1, [FromQuery] int itens = 50)
         {
             return Ok(_authorService.GetFilter(name, nationality, age, page, itens));
             

@@ -82,14 +82,14 @@ namespace DesafioBibliotecaApi.Repositorio
 
         }
 
-        public Book UpdateAvailable(Guid id)
+        public Book UpdateAvailable(Guid id, bool increment)
         {
             var bookUpdate = _books.Where(a => a.Id == id).SingleOrDefault();
 
             if (bookUpdate is null)
                 throw new Exception("Book not found.");
 
-            bookUpdate.UpdateAvailable();
+            bookUpdate.UpdateAvailable(increment);
 
             return bookUpdate;
 
@@ -98,6 +98,12 @@ namespace DesafioBibliotecaApi.Repositorio
         public Book GetByName(string name)
         {
             return _books.Where(u => u.Name == name).FirstOrDefault();
+
+        }
+
+        public IEnumerable<Book> GetAll()
+        {
+            return _books;
 
         }
 

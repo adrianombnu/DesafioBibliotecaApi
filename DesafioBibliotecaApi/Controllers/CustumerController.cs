@@ -45,8 +45,9 @@ namespace DesafioBibliotecaApi.Controllers
                 Lastname = userDTO.Client.Lastname,
                 Age = userDTO.Client.Age,
                 Document = userDTO.Client.Document,
-                ZipCode = userDTO.Client.ZipCode,  
-                IdUser = user.Id
+                ZipCode = userDTO.Client.ZipCode,
+                IdUser = user.Id,
+                Birthdate = userDTO.Client.Birthdate
 
             };
 
@@ -54,15 +55,22 @@ namespace DesafioBibliotecaApi.Controllers
             {
                 var responseAdress = await _adressService.FindAdress(userDTO.Client.ZipCode);
                 client.Adress = responseAdress;
+                client.Adress.Client = client;
 
             }
             else
             {
-                client.Adress.District = userDTO.Client.Adress.District;
-                client.Adress.Complement = userDTO.Client.Adress.Complement;
-                client.Adress.State = userDTO.Client.Adress.State;
-                client.Adress.Location = userDTO.Client.Adress.Location;
-                client.Adress.Street = userDTO.Client.Adress.Street;
+                client.Adress = new Adress
+                {
+                    Location = userDTO.Client.Adress.Location,
+                    District = userDTO.Client.Adress.District,
+                    State = userDTO.Client.Adress.State,
+                    Street = userDTO.Client.Adress.Street,
+                    Complement = userDTO.Client.Adress.Complement,
+                    Client = client,
+                    ZipCode = userDTO.Client.ZipCode
+
+                };
 
             }
 
@@ -87,8 +95,9 @@ namespace DesafioBibliotecaApi.Controllers
                 Age = userDTO.Client.Age,
                 Document = userDTO.Client.Document,
                 ZipCode = userDTO.Client.ZipCode,
-                IdUser = userDTO.Id
-            
+                IdUser = userDTO.Id,
+                Birthdate = userDTO.Client.Birthdate
+
             };
 
             if (userDTO.Client.Adress is null)
@@ -99,11 +108,17 @@ namespace DesafioBibliotecaApi.Controllers
             }
             else
             {
-                client.Adress.District = userDTO.Client.Adress.District;
-                client.Adress.Complement = userDTO.Client.Adress.Complement;
-                client.Adress.State = userDTO.Client.Adress.State;
-                client.Adress.Location = userDTO.Client.Adress.Location;
-                client.Adress.Street = userDTO.Client.Adress.Street;
+                client.Adress = new Adress
+                {
+                    Location = userDTO.Client.Adress.Location,
+                    District = userDTO.Client.Adress.District,
+                    State = userDTO.Client.Adress.State,
+                    Street = userDTO.Client.Adress.Street,
+                    Complement = userDTO.Client.Adress.Complement,
+                    Client = client,
+                    ZipCode = userDTO.Client.ZipCode
+
+                };
 
             }
 

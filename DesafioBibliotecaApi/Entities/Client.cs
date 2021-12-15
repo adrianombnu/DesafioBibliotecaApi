@@ -22,6 +22,7 @@ namespace DesafioBibliotecaApi.Entities
             Age = client.Age;   
             ZipCode = client.ZipCode;   
             Adress = client.Adress;
+            Birthdate = client.Birthdate;
         }
     }
 }

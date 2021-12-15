@@ -74,8 +74,8 @@ namespace DesafioBibliotecaApi.Services
             if (!String.IsNullOrEmpty(document))
                 query = query.Where(x => x.Client.Document == document);
 
-            if (birthdate is not null)
-                query = query.Where(x => x.Client.Birthdate == birthdate);
+            if (birthdate.HasValue)
+                query = query.Where(x => x.Client.Birthdate.ToString("MM/dd/yyyy") == birthdate.Value.ToString("MM/dd/yyyy"));
 
             return query.Select(u =>
             {
@@ -105,7 +105,7 @@ namespace DesafioBibliotecaApi.Services
                     }
 
                 };
-            });
+            }).Skip((page - 1) * itens).Take(itens);
 
         }
 

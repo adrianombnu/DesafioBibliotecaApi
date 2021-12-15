@@ -29,27 +29,31 @@ namespace DesafioBibliotecaApi.Controllers
         [HttpPost, AllowAnonymous]
         public async Task<IActionResult> Cadastrar(NewUserEmployeeDTO userEmployeeDTO)
         {
+            userEmployeeDTO.Validar();
+
+            if (!userEmployeeDTO.Valido)
+                return BadRequest("User invalid!");
+
             var user = new User
             {
                 Role = userEmployeeDTO.Role,
                 UserName = userEmployeeDTO.Username,
-                Password = userEmployeeDTO.Password              
+                Password = userEmployeeDTO.Password
             };
-
-            _employeeService.Create(user);
 
             var client = new Client
             {
-               Name = userEmployeeDTO.Client.Name,
-               Lastname = userEmployeeDTO.Client.Lastname,
-               Age = userEmployeeDTO.Client.Age,
-               Document = userEmployeeDTO.Client.Document,
-               ZipCode = userEmployeeDTO.Client.ZipCode,    
-               IdUser = user.Id
+                Name = userEmployeeDTO.Client.Name,
+                Lastname = userEmployeeDTO.Client.Lastname,
+                Age = userEmployeeDTO.Client.Age,
+                Document = userEmployeeDTO.Client.Document,
+                ZipCode = userEmployeeDTO.Client.ZipCode,
+                IdUser = user.Id,
+                Birthdate = userEmployeeDTO.Client.Birthdate
 
             };
 
-            if(userEmployeeDTO.Client.Adress is null)
+            if (userEmployeeDTO.Client.Adress is null)
             {
                 var responseAdress = await _adressService.FindAdress(userEmployeeDTO.Client.ZipCode);
                 client.Adress = responseAdress;
@@ -57,14 +61,21 @@ namespace DesafioBibliotecaApi.Controllers
             }
             else
             {
-                client.Adress.District = userEmployeeDTO.Client.Adress.District;
-                client.Adress.Complement = userEmployeeDTO.Client.Adress.Complement;
-                client.Adress.State = userEmployeeDTO.Client.Adress.State;
-                client.Adress.Location = userEmployeeDTO.Client.Adress.Location;
-                client.Adress.Street = userEmployeeDTO.Client.Adress.Street;
-                
-            }
-            
+                client.Adress = new Adress
+                {
+                    Location = userEmployeeDTO.Client.Adress.Location,
+                    District = userEmployeeDTO.Client.Adress.District,
+                    State = userEmployeeDTO.Client.Adress.State,
+                    Street = userEmployeeDTO.Client.Adress.Street,
+                    Complement = userEmployeeDTO.Client.Adress.Complement,
+                    Client = client,
+                    ZipCode = userEmployeeDTO.Client.ZipCode
+
+                };
+
+            } 
+
+            _employeeService.Create(user);
             return Created("", _clientService.Create(client));
 
         }
@@ -85,7 +96,8 @@ namespace DesafioBibliotecaApi.Controllers
                 Age = userDTO.Client.Age,
                 Document = userDTO.Client.Document,
                 ZipCode = userDTO.Client.ZipCode,
-                IdUser = userDTO.Id
+                IdUser = userDTO.Id,
+                Birthdate = userDTO.Client.Birthdate
 
             };
 
@@ -93,15 +105,22 @@ namespace DesafioBibliotecaApi.Controllers
             {
                 var responseAdress = await _adressService.FindAdress(userDTO.Client.ZipCode);
                 client.Adress = responseAdress;
+                client.Adress.Client = client;
 
             }
             else
             {
-                client.Adress.District = userDTO.Client.Adress.District;
-                client.Adress.Complement = userDTO.Client.Adress.Complement;
-                client.Adress.State = userDTO.Client.Adress.State;
-                client.Adress.Location = userDTO.Client.Adress.Location;
-                client.Adress.Street = userDTO.Client.Adress.Street;
+                client.Adress = new Adress
+                {
+                    Location = userDTO.Client.Adress.Location,
+                    District = userDTO.Client.Adress.District,
+                    State = userDTO.Client.Adress.State,
+                    Street = userDTO.Client.Adress.Street,
+                    Complement = userDTO.Client.Adress.Complement,
+                    Client = client,
+                    ZipCode = userDTO.Client.ZipCode
+
+                };
 
             }
 
@@ -125,11 +144,10 @@ namespace DesafioBibliotecaApi.Controllers
 
         //[HttpGet, Authorize]
         [HttpGet]
-        public IActionResult Get([FromQuery] string name, [FromQuery] DateTime birthdate, [FromQuery] string document, [FromQuery] int page, [FromQuery] int itens)
+        public IActionResult Get([FromQuery] string? name = null, [FromQuery] DateTime? birthdate = null, [FromQuery] string? document = null, [FromQuery] int page = 1, [FromQuery] int itens = 50)
         {
             var users = _employeeService.GetFilter(name, birthdate, document, page, itens);
-            var resultados = users.Skip((page - 1) * itens).Take(itens);
-            return Ok(resultados);
+            return Ok(users);
 
         }
 

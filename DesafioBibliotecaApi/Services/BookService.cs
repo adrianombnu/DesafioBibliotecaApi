@@ -45,38 +45,39 @@ namespace DesafioBibliotecaApi.Services
 
         }
 
-        public IEnumerable<BookDTO> GetFilter(string? name = null, int? releaseYear = null, string? description = null, int page = 1, int itens = 50)
+        public IEnumerable<ResultBookDTO> GetFilter(string? name = null, int? releaseYear = null, string? description = null, int page = 1, int itens = 50)
         {
             var books = _bookRepository.Get(name, releaseYear, description, page, itens);
 
             return books.Select(a =>
             {
-                return new BookDTO
+                return new ResultBookDTO
                 {
                     Id = a.Id,
                     Name = a.Name,
                     ReleaseYear = a.ReleaseYear,
                     Description = a.Description,
                     AuthorId = a.AuthorId,
-                    QuantityInventory = a.QuantityInventory
-                    
+                    QuantityInventory = a.QuantityInventory,
+                    QuantityAvailable = a.QuantityAvailable
                 };
             });
 
         }
 
-        public BookDTO Get(Guid id)
+        public ResultBookDTO Get(Guid id)
         {
             var book = _bookRepository.Get(id);
 
-            return new BookDTO
+            return new ResultBookDTO
             {
                 Name = book.Name,
                 ReleaseYear = book.ReleaseYear,
                 Description = book.Description,
                 AuthorId = book.AuthorId,
-                QuantityInventory = book.QuantityInventory
-                
+                QuantityInventory = book.QuantityInventory,
+                QuantityAvailable = book.QuantityAvailable
+
             };
         }
 

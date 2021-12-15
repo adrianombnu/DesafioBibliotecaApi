@@ -34,9 +34,12 @@ namespace DesafioBibliotecaApi.Entities
 
         }
 
-        public void UpdateAvailable()
+        public void UpdateAvailable(bool increment)
         {
-            QuantityAvailable = --QuantityAvailable;
+            if(increment)
+                QuantityAvailable = ++QuantityAvailable;
+            else
+                QuantityAvailable = --QuantityAvailable;
 
         }
 
