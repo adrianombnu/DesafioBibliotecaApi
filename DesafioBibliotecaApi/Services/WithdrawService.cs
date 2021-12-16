@@ -1,5 +1,6 @@
 ﻿using DesafioBibliotecaApi.DTOs;
 using DesafioBibliotecaApi.Entities;
+using DesafioBibliotecaApi.Enumerados;
 using DesafioBibliotecaApi.Repositorio;
 using DesafioBibliotecaApi.Repository;
 using System;
@@ -15,21 +16,19 @@ namespace DesafioBibliotecaApi.Services
         private readonly AuthorRepository _authorRepository;
         private readonly ClientRepository _clientRepository;
         private readonly WithdrawRepository _withdrawRepository;
-        private readonly FacedService _facedService;
 
         public WithdrawService(ReservationRepository repository,
                                BookRepository bookRepository,
                                AuthorRepository authorRepository,
                                ClientRepository clientRepository,
-                               WithdrawRepository withdrawRepository,
-                               FacedService facedService)
+                               WithdrawRepository withdrawRepository)
         {
             _reservationRepository = repository;
             _bookRepository = bookRepository;
             _clientRepository = clientRepository;
             _authorRepository = authorRepository;
             _withdrawRepository = withdrawRepository;
-            _facedService = facedService;
+            
         }
 
         public WithdrawDTO Create(Withdraw withdraw)
@@ -40,24 +39,20 @@ namespace DesafioBibliotecaApi.Services
             if (withdraw.EndDate.Date < withdraw.StartDate.Date)
                 throw new Exception("End data must be greater than: " + withdraw.StartDate.ToString("dd/MM/yyyy"));
 
-            //if(_facedService.FindPendenteReservation)
-              //  throw new Exception("Já existe uma reserva em aberto para o período informado, favor encerra-la.");
-
-
-            foreach (var b in withdraw.Books)
+            foreach (var b in withdraw.IdBooks)
             {
-                var book = _bookRepository.Get(b.Id);
+                var book = _bookRepository.Get(b);
 
                 if (book == null)
                     throw new Exception("Book not found");
 
-                /*var quantityReserved = FindQuantityReserved(book.Id, withdraw.StartDate, withdraw.EndDate);
+                if (FindPendenteReservation(book.Id, withdraw.StartDate, withdraw.EndDate, withdraw.IdClient))
+                  throw new Exception("There is already an open reservation for the period informed, please close it.");
+
+                var quantityReserved = FindQuantityReserved(book.Id, withdraw.StartDate, withdraw.EndDate);
                 var quantityWithdraw = FindQuantityWithdraw(book.Id, withdraw.StartDate, withdraw.EndDate);
-                */
 
-                var quantityAvailable = _facedService.Available(book.Id, withdraw.StartDate, withdraw.EndDate);
-
-                if (quantityAvailable >= book.QuantityInventory)
+                if ((quantityReserved + quantityWithdraw) >= book.QuantityInventory)
                     throw new Exception("Book " + book.Name + " not available for the period informed");
 
             }
@@ -77,21 +72,21 @@ namespace DesafioBibliotecaApi.Services
                 EndDate = withdrawCreated.EndDate,
                 StartDate = withdrawCreated.StartDate,
                 IdClient = withdrawCreated.IdClient,
-                Books = withdrawCreated.Books,
+                IdBooks = withdrawCreated.IdBooks,
                 Id = withdrawCreated.Id,
                 StatusWithdraw = withdrawCreated.StatusWithdraw
             };
 
         }
 
-        public IEnumerable<WithdrawDTO> Get(Guid idUser)
+        public IEnumerable<WithdrawDTO> Get(Guid userId)
         {
-            var client = _clientRepository.GetIdUser(idUser);
+            var client = _clientRepository.GetIdUser(userId);
 
             if (client == null)
                 throw new Exception("Client not found");
 
-            var withdraws = _withdrawRepository.Get(client.Id);
+            var withdraws = _withdrawRepository.Get(client.Id).Where(x => x.StatusWithdraw == EStatusWithdraw.InProgress);
 
             return withdraws.Select(a =>
             {
@@ -101,14 +96,20 @@ namespace DesafioBibliotecaApi.Services
                     StartDate = a.StartDate,
                     IdClient = a.IdClient,
                     Id = a.Id,
-                    Books = a.Books,
+                    IdBooks = a.IdBooks,
+                    StatusWithdraw = a.StatusWithdraw
 
                 };
             });
         }                
 
-        public bool FinalizeReservation(Guid idWithdraw)
+        public bool FinalizeWithdraw(Guid idWithdraw)
         {
+            var withdraw = _withdrawRepository.GetById(idWithdraw);
+
+            if (withdraw.StatusWithdraw == EStatusWithdraw.Closed)
+                throw new Exception("Reservation is already closed.");
+
             return _withdrawRepository.FinalizeWithdraw(idWithdraw);
 
         }
@@ -122,9 +123,9 @@ namespace DesafioBibliotecaApi.Services
             {
                 var myBooks = new List<BookFilterDTO>();
 
-                foreach (var d in l.Books)
+                foreach (var d in l.IdBooks)
                 {
-                    var book = _bookRepository.Get(d.Id);
+                    var book = _bookRepository.Get(d);
                     var authorBook = _authorRepository.Get(book.AuthorId);
 
                     myBooks.Add(new BookFilterDTO
@@ -148,6 +149,7 @@ namespace DesafioBibliotecaApi.Services
                     Id = l.Id,
                     IdClient = l.IdClient,
                     Books = myBooks,
+                    StatusWithdraw = l.StatusWithdraw
 
                 });
 
@@ -168,6 +170,23 @@ namespace DesafioBibliotecaApi.Services
             return myWithdraws;
 
         }
+        public int FindQuantityReserved(Guid idBook, DateTime startDate, DateTime endDate)
+        {
+            var allReservations = _reservationRepository.GetByPeriod(startDate, endDate, idBook);
+            var count = 0;
+
+            foreach (var r in allReservations)
+            {
+                foreach (var b in r.IdBooks)
+                {
+                    if (b == idBook)
+                        count++;
+                }
+
+            }
+
+            return count;
+        }
 
         public int FindQuantityWithdraw(Guid idBook, DateTime startDate, DateTime endDate)
         {
@@ -176,15 +195,25 @@ namespace DesafioBibliotecaApi.Services
 
             foreach (var r in allWithdraws)
             {
-                foreach (var b in r.Books)
+                foreach (var b in r.IdBooks)
                 {
-                    if (b.Id == idBook)
+                    if (b == idBook)
                         count++;
                 }
 
             }
 
             return count;
+        }
+
+        public bool FindPendenteReservation(Guid idBook, DateTime startDate, DateTime endDate, Guid idClient)
+        {
+            var allReservations = _reservationRepository.GetPendentReservationByPeriod(startDate, endDate, idBook, idClient);
+
+            if (allReservations.Count() > 0)
+                return true;
+            else
+                return false;
         }
     }
 }

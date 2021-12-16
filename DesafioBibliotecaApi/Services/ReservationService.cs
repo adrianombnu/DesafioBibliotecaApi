@@ -1,5 +1,6 @@
 ﻿using DesafioBibliotecaApi.DTOs;
 using DesafioBibliotecaApi.Entities;
+using DesafioBibliotecaApi.Enumerados;
 using DesafioBibliotecaApi.Repositorio;
 using DesafioBibliotecaApi.Repository;
 using System;
@@ -14,19 +15,19 @@ namespace DesafioBibliotecaApi.Services
         private readonly BookRepository _bookRepository;
         private readonly AuthorRepository _authorRepository;
         private readonly ClientRepository _clientRepository;
-        private readonly FacedService _facedService;
+        private readonly WithdrawRepository _withdrawRepository;
 
         public ReservationService(ReservationRepository repository,
                                   BookRepository bookRepository,
                                   AuthorRepository authorRepository,
                                   ClientRepository clientRepository,
-                                  FacedService facedService)
+                                  WithdrawRepository withdrawRepository)
         {
             _reservationRepository = repository;
             _bookRepository = bookRepository;
             _clientRepository = clientRepository;
             _authorRepository = authorRepository;
-            _facedService = facedService;
+            _withdrawRepository = withdrawRepository;
 
         }
 
@@ -45,13 +46,10 @@ namespace DesafioBibliotecaApi.Services
                 if (book == null)
                     throw new Exception("Book not found");
 
-                /*var quantityReserved = FindQuantityReserved(book.Id, reservation.StartDate, reservation.EndDate);
-                var quantityWithdraw = _withdrawService.FindQuantityReserved(book.Id, reservation.StartDate, reservation.EndDate);
-                */
+                var quantityReserved = FindQuantityReserved(book.Id, reservation.StartDate, reservation.EndDate);
+                var quantityWithdraw = FindQuantityWithdraw(book.Id, reservation.StartDate, reservation.EndDate);
 
-                var quantityAvailable = _facedService.Available(book.Id, reservation.StartDate, reservation.EndDate);
-
-                if (quantityAvailable >= book.QuantityInventory)
+                if ((quantityReserved + quantityWithdraw) >= book.QuantityInventory)
                     throw new Exception("Book " + book.Name + " not available for the period informed");
 
             }
@@ -87,13 +85,10 @@ namespace DesafioBibliotecaApi.Services
                 if (book == null)
                     throw new Exception("Book not found");
 
-                /*var quantityReserved = FindQuantityReserved(book.Id, reservation.StartDate, reservation.EndDate);
-                var quantityWithdraw = _withdrawService.FindQuantityReserved(book.Id, reservation.StartDate, reservation.EndDate);
-                */
+                var quantityReserved = FindQuantityReserved(book.Id, reservation.StartDate, reservation.EndDate);
+                var quantityWithdraw = FindQuantityWithdraw(book.Id, reservation.StartDate, reservation.EndDate);
 
-                var quantityAvailable = _facedService.Available(book.Id, reservation.StartDate, reservation.EndDate);
-
-                if (quantityAvailable >= book.QuantityInventory)
+                if ((quantityReserved + quantityWithdraw) >= book.QuantityInventory)
                     throw new Exception("Book " + book.Name + " not available for the period informed");
                 
             }
@@ -144,15 +139,15 @@ namespace DesafioBibliotecaApi.Services
         {
             var reservation = _reservationRepository.GetById(idReservation);
 
-            if (reservation.StatusReservation == Enumerados.EStatusReservation.Canceled)
+            if (reservation.StatusReservation == EStatusReservation.Canceled)
                 throw new Exception("Reservation is already canceled.");
 
-            if (reservation.StatusReservation == Enumerados.EStatusReservation.Closed)
+            if (reservation.StatusReservation == EStatusReservation.Closed)
                 throw new Exception("Reservation is already finalized.");
 
             var lastWorkingDay = ValidateLastWorkingDay(DateTime.Now);
 
-            if (reservation.StartDate > lastWorkingDay)
+            if (reservation.StartDate.Date > lastWorkingDay.Date)
                 throw new Exception("The reservation can only be canceled up to one business day prior to the reservation date.");
 
             foreach (var l in reservation.IdBooks)
@@ -167,6 +162,11 @@ namespace DesafioBibliotecaApi.Services
 
         public bool FinalizeReservation(Guid idReservation)
         {
+            var reservation = _reservationRepository.GetById(idReservation);
+
+            if (reservation.StatusReservation != EStatusReservation.Closed)
+                throw new Exception("Reservation is already canceled or closed.");
+
             return _reservationRepository.FinalizeReservation(idReservation);
 
         }
@@ -251,6 +251,24 @@ namespace DesafioBibliotecaApi.Services
             var count = 0;
 
             foreach (var r in allReservations)
+            {
+                foreach (var b in r.IdBooks)
+                {
+                    if (b == idBook)
+                        count++;
+                }
+
+            }
+
+            return count;
+        }
+
+        public int FindQuantityWithdraw(Guid idBook, DateTime startDate, DateTime endDate)
+        {
+            var allWithdraws = _withdrawRepository.GetByPeriod(startDate, endDate, idBook);
+            var count = 0;
+
+            foreach (var r in allWithdraws)
             {
                 foreach (var b in r.IdBooks)
                 {

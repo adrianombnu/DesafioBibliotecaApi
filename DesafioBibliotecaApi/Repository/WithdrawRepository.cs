@@ -19,29 +19,6 @@ namespace DesafioBibliotecaApi.Repository
             withdraw.Id = Guid.NewGuid();
             _withdraws.Add(withdraw);
 
-            return _withdraws;
-        }
-
-        public Reservation Update(Guid idReservation, Reservation reservation)
-        {
-            var reserve = _reservations.Where(a => a.Id == idReservation).SingleOrDefault();
-
-            if (reserve is null)
-                throw new Exception("Reservation not found.");
-
-            reserve.Update(reservation);
-
-            return reserve;
-
-        }
-
-        public Withdraw GetById(Guid idWithdraw)
-        {
-            var withdraw = _withdraws.Where(a => a.Id == idWithdraw).SingleOrDefault();
-
-            if (withdraw is null)
-                throw new Exception("Withdraw not found.");
-
             return withdraw;
         }
 
@@ -64,14 +41,25 @@ namespace DesafioBibliotecaApi.Repository
             if (withdraw is null)
                 throw new Exception("Withdraw not found.");
 
-            withdraw.FinalizeReservation();
+            withdraw.FinalizeWithdraw();
 
             return true;
 
         }
+
+        public Withdraw GetById(Guid idWithdraw)
+        {
+            var withdraw = _withdraws.Where(a => a.Id == idWithdraw).SingleOrDefault();
+
+            if (withdraw is null)
+                throw new Exception("Withdraw not found.");
+
+            return withdraw;
+        }
+
         public IEnumerable<Withdraw> GetByPeriod(DateTime starDate, DateTime endDate, Guid idBook)
         {
-            return _withdraws.Where(a => a.StartDate.Date >= starDate.Date && a.EndDate.Date <= endDate.Date && a.StatusWithdraw == EStatusWithdraw.InProgress).Where(x => x.Books.Any(y => y.Id == idBook));
+            return _withdraws.Where(a => a.StartDate.Date >= starDate.Date && a.EndDate.Date <= endDate.Date && a.StatusWithdraw == EStatusWithdraw.InProgress).Where(x => x.IdBooks.Any(y => y == idBook));
 
         }
 

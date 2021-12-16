@@ -48,7 +48,7 @@ namespace DesafioBibliotecaApi.Controllers
         [HttpGet, Route("books")]
         public IActionResult Get([FromQuery] string? name, [FromQuery] int? releaseYear, [FromQuery] string? description, [FromQuery] int page = 1, [FromQuery] int itens = 50)
         {
-            try
+            /*try
             {
                 var userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
 
@@ -56,7 +56,7 @@ namespace DesafioBibliotecaApi.Controllers
             catch (Exception ex)
             {
                 return BadRequest("User not authenticated");
-            }
+            }*/
 
             return Ok(_bookService.GetFilter(name, releaseYear, description, page, itens));
                         

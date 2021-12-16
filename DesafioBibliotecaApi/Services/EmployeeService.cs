@@ -100,7 +100,7 @@ namespace DesafioBibliotecaApi.Services
                         Name = u.Client.Name,
                         ZipCode = u.Client.ZipCode,
                         Birthdate = u.Client.Birthdate,
-                        Id = u.Id,
+                        Id = u.Client.Id,
 
                     }
 

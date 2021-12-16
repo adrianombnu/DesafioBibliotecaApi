@@ -11,6 +11,7 @@ namespace DesafioBibliotecaApi.DTOs
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public List<BookFilterDTO> Books { get; set; }
+        public EStatusWithdraw StatusWithdraw { get; set; }
         public Guid IdClient { get; set; }
 
         

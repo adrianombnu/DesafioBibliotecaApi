@@ -27,42 +27,27 @@ namespace DesafioBibliotecaApi.Controllers
             withdrawDTO.Validar();
 
             if (!withdrawDTO.Valido)
-                return BadRequest("Invalid reservation!");
+                return BadRequest("Invalid withdraw!");
 
             try
             {
-                var reservation = new Reservation(reservationDTO.StartDate, reservationDTO.EndDate, reservationDTO.idBooks, reservationDTO.IdClient);
+                var withdraw = new Withdraw(withdrawDTO.StartDate, withdrawDTO.EndDate, withdrawDTO.IdBooks, withdrawDTO.IdClient);
 
-                return Created("", _reservationService.Create(reservation));
+                return Created("", _withdrawService.Create(withdraw));
 
             }
             catch (Exception ex)
             {
-                return BadRequest("Error creating reservation : " + ex.Message);
+                return BadRequest("Error creating withdraw : " + ex.Message);
             }
 
         }
 
-        //[HttpPost, Authorize, Route("withdraw/finalize/{id}")]
-        [HttpPost, Route("withdraw/finalize/{id}")]
-        public IActionResult Update([FromBody] UpdateReservationDTO reservationDTO)
+        //[HttpPost, Authorize, Route("withdraw/finalize/{idWithdraw}")]
+        [HttpPost, Route("withdraw/finalize/{idWithdraw}")]
+        public IActionResult FinalizeWithdraw(Guid idWithdraw)
         {
-            reservationDTO.Validar();
-
-            if (!reservationDTO.Valido)
-                return BadRequest("Invalid reservation!");
-
-            try
-            {
-                var reservation = new Reservation(reservationDTO.StartDate, reservationDTO.EndDate, reservationDTO.idBooks);
-
-                return Created("", _withdrawService.Update(reservationDTO.Id, reservation));
-
-            }
-            catch (Exception ex)
-            {
-                return BadRequest("Error updating reservation : " + ex.Message);
-            }
+            return Created("", _withdrawService.FinalizeWithdraw(idWithdraw));
 
         }
 
@@ -74,13 +59,15 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        //[HttpGet, Authorize, Route("{id}/withdraw")]
-        [HttpGet, Route("{id}/withdraw")]
-        public IActionResult Get(Guid id)
+        //[HttpGet, Authorize, Route("{inprogress")]
+        [HttpGet, Route("{withdraw/inprogress")]
+        public IActionResult Get()
         {
+            var userId = string.Empty;
+
             try
             {
-                var userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
+                userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
 
             }
             catch (Exception ex)
@@ -88,8 +75,7 @@ namespace DesafioBibliotecaApi.Controllers
                 return BadRequest("User not authenticated");
             }
 
-
-            return Ok(_withdrawService.Get(id));
+            return Ok(_withdrawService.Get(Guid.Parse(userId)));
 
         }
 
