@@ -1,11 +1,8 @@
 ﻿using DesafioBibliotecaApi.DTOs;
 using DesafioBibliotecaApi.Entidades;
-using DesafioBibliotecaApi.Entities;
 using DesafioBibliotecaApi.Repositorio;
 using DesafioBibliotecaApi.Repository;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace DesafioBibliotecaApi.Services
 {
@@ -13,15 +10,11 @@ namespace DesafioBibliotecaApi.Services
     {
         private readonly UserRepository _userRepository;
         private readonly ClientRepository _clientRepository;
-        private readonly AdressRepository _adressRepository;
-        private readonly JwtTokenService _tokenService;
 
-        public CustumerService(UserRepository userRepository, ClientRepository clientRepository, AdressRepository adressRepository, JwtTokenService tokenService)
+        public CustumerService(UserRepository userRepository, ClientRepository clientRepository)
         {
             _userRepository = userRepository;
             _clientRepository = clientRepository;
-            _adressRepository = adressRepository;
-            _tokenService = tokenService;
         }
 
         public UserDTO Create(User user)
@@ -42,51 +35,7 @@ namespace DesafioBibliotecaApi.Services
             };
 
         }
-
-        /*
-        public IEnumerable<UserResultDTO> Get()
-        {
-            var users = _userRepository.Get();
-            var clients = _clientRepository.Get();
-
-            var query = from user in users
-                        join client in clients on user.Id equals client.IdUser
-                        select new { Username = user.UserName, Role = user.Role, Id = user.Id, Client = client};
-                       
-
-            return query.Select(u =>
-            {
-                return new UserResultDTO
-                {
-                    Role = u.Role,
-                    Username = u.Username,
-                    Id = u.Id,
-                    Client = new ClientDTO
-                    {
-                        Adress = new AdressDTO
-                        {
-                            Street = u.Client.Adress.Street,
-                            Complement = u.Client.Adress.Complement,
-                            District = u.Client.Adress.District,
-                            Location = u.Client.Adress.Location,
-                            State = u.Client.Adress.State
-                        },
-                        Age = u.Client.Age,
-                        Document = u.Client.Document,
-                        Lastname = u.Client.Lastname,
-                        Name = u.Client.Name,
-                        ZipCode = u.Client.ZipCode,
-                        Birthdate = u.Client.Birthdate, 
-                        Id = u.Client.Id
-
-                    }
-
-                };
-            });
-
-        }
-        */
-
+        
         public UserResultDTO Get(Guid id)
         {
             var user = _userRepository.Get(id);

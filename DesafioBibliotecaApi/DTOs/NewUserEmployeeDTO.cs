@@ -1,6 +1,4 @@
-﻿using DesafioBibliotecaApi.Entities;
-
-namespace DesafioBibliotecaApi.DTOs
+﻿namespace DesafioBibliotecaApi.DTOs
 {
     public class NewUserEmployeeDTO : Validator
     {

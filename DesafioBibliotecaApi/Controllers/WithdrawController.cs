@@ -1,8 +1,6 @@
 ﻿using DesafioBibliotecaApi.DTOs;
-using DesafioBibliotecaApi.Entidades;
 using DesafioBibliotecaApi.Entities;
 using DesafioBibliotecaApi.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
@@ -31,7 +29,7 @@ namespace DesafioBibliotecaApi.Controllers
 
             try
             {
-                var withdraw = new Withdraw(withdrawDTO.StartDate, withdrawDTO.EndDate, withdrawDTO.IdBooks, withdrawDTO.IdClient);
+                var withdraw = new Withdraw(withdrawDTO.StartDate, withdrawDTO.EndDate, withdrawDTO.IdBooks, withdrawDTO.IdClient, withdrawDTO.IdReservation);
 
                 return Created("", _withdrawService.Create(withdraw));
 
@@ -53,14 +51,19 @@ namespace DesafioBibliotecaApi.Controllers
 
         //[HttpGet, Authorize, Route("withdraw")]
         [HttpGet, Route("withdraw")]
-        public IActionResult Get([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] string? author, [FromQuery] string? bookName, [FromQuery] int page = 1, [FromQuery] int itens = 50)
+        public IActionResult Get([FromQuery] DateTime? startDate,
+                                 [FromQuery] DateTime? endDate,
+                                 [FromQuery] string? author,
+                                 [FromQuery] string? bookName,
+                                 [FromQuery] int page = 1,
+                                 [FromQuery] int itens = 50)
         {
             return Ok(_withdrawService.GetFilter(startDate, endDate, author, bookName, page, itens));
 
         }
 
         //[HttpGet, Authorize, Route("{inprogress")]
-        [HttpGet, Route("{withdraw/inprogress")]
+        [HttpGet, Route("withdraw/inprogress")]
         public IActionResult Get()
         {
             var userId = string.Empty;

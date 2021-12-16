@@ -1,8 +1,6 @@
 ﻿using DesafioBibliotecaApi.DTOs;
-using DesafioBibliotecaApi.Entidades;
 using DesafioBibliotecaApi.Entities;
 using DesafioBibliotecaApi.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
@@ -68,7 +66,12 @@ namespace DesafioBibliotecaApi.Controllers
 
         //[HttpGet, Authorize, Route("reservations")]
         [HttpGet, Route("reservations")]
-        public IActionResult Get([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] string? author, [FromQuery] string? bookName, [FromQuery] int page = 1, [FromQuery] int itens = 50)
+        public IActionResult Get([FromQuery] DateTime? startDate,
+                                 [FromQuery] DateTime? endDate,
+                                 [FromQuery] string? author,
+                                 [FromQuery] string? bookName,
+                                 [FromQuery] int page = 1,
+                                 [FromQuery] int itens = 50)
         {
             return Ok(_reservationService.GetFilter(startDate, endDate, author, bookName, page, itens));
 

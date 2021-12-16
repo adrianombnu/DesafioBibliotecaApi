@@ -1,11 +1,9 @@
 ﻿using DesafioBibliotecaApi.DTOs;
-using DesafioBibliotecaApi.Entidades;
 using DesafioBibliotecaApi.Entities;
 using DesafioBibliotecaApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 
@@ -46,7 +44,11 @@ namespace DesafioBibliotecaApi.Controllers
 
         //[HttpGet, Authorize, Route("books")]
         [HttpGet, Route("books")]
-        public IActionResult Get([FromQuery] string? name, [FromQuery] int? releaseYear, [FromQuery] string? description, [FromQuery] int page = 1, [FromQuery] int itens = 50)
+        public IActionResult Get([FromQuery] string? name,
+                                 [FromQuery] int? releaseYear,
+                                 [FromQuery] string? description,
+                                 [FromQuery] int page = 1,
+                                 [FromQuery] int itens = 50)
         {
             /*try
             {

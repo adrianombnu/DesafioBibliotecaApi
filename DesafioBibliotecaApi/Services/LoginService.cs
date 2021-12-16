@@ -1,6 +1,5 @@
 ﻿using DesafioBibliotecaApi.DTOs;
 using DesafioBibliotecaApi.Repositorio;
-using System;
 
 namespace DesafioBibliotecaApi.Services
 {

@@ -1,5 +1,4 @@
-﻿using DesafioBibliotecaApi.Entidades;
-using System;
+﻿using System;
 
 namespace DesafioBibliotecaApi.DTOs
 {

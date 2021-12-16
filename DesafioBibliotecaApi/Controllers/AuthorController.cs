@@ -1,5 +1,4 @@
 ﻿using DesafioBibliotecaApi.DTOs;
-using DesafioBibliotecaApi.Entidades;
 using DesafioBibliotecaApi.Entities;
 using DesafioBibliotecaApi.Services;
 using Microsoft.AspNetCore.Authorization;

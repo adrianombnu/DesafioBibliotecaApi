@@ -26,7 +26,7 @@ namespace DesafioBibliotecaApi.Repositorio
             if (age is not null && age > 0)
                 retorno = retorno.Where(x => x.Age == age);
 
-            return retorno.Skip((page - 1) * itens).Take(itens); ;
+            return retorno.Skip((page - 1) * itens).Take(itens);
 
         }
 

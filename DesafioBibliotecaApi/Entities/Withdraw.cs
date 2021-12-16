@@ -12,14 +12,16 @@ namespace DesafioBibliotecaApi.Entities
         public List<Guid> IdBooks { get; set; }
         public Guid IdClient { get; set; }
         public EStatusWithdraw StatusWithdraw { get; set; }
-
-        public Withdraw(DateTime startDate, DateTime endDate, List<Guid> idBooks, Guid idClient)
+        public Guid? IdReservation { get; set; }
+                
+        public Withdraw(DateTime startDate, DateTime endDate, List<Guid> idBooks, Guid idClient, Guid? idReservation)
         {
             StartDate = startDate;
             EndDate = endDate;
             StatusWithdraw = EStatusWithdraw.InProgress;
             IdBooks = idBooks;
             IdClient = idClient;
+            IdReservation = idReservation;
         }
 
         public void FinalizeWithdraw()

@@ -59,7 +59,10 @@ namespace DesafioBibliotecaApi.Repository
 
         public IEnumerable<Withdraw> GetByPeriod(DateTime starDate, DateTime endDate, Guid idBook)
         {
-            return _withdraws.Where(a => a.StartDate.Date >= starDate.Date && a.EndDate.Date <= endDate.Date && a.StatusWithdraw == EStatusWithdraw.InProgress).Where(x => x.IdBooks.Any(y => y == idBook));
+            return _withdraws.Where(a => ((a.StartDate.Date >= starDate.Date && a.StartDate.Date <= endDate.Date) ||
+                                          (a.EndDate.Date >= starDate.Date && a.StartDate.Date <= endDate.Date)) && 
+                                          a.StatusWithdraw == EStatusWithdraw.InProgress)
+                             .Where(x => x.IdBooks.Any(y => y == idBook));
 
         }
 

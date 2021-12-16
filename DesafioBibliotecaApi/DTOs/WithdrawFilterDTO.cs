@@ -1,5 +1,4 @@
-﻿using DesafioBibliotecaApi.Entities;
-using DesafioBibliotecaApi.Enumerados;
+﻿using DesafioBibliotecaApi.Enumerados;
 using System;
 using System.Collections.Generic;
 

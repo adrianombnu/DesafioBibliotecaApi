@@ -1,5 +1,4 @@
-﻿using DesafioBibliotecaApi.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace DesafioBibliotecaApi.DTOs
@@ -10,6 +9,7 @@ namespace DesafioBibliotecaApi.DTOs
         public DateTime EndDate { get; set; }
         public List<Guid> IdBooks { get; set; }
         public Guid IdClient { get; set; }
+        public Guid? IdReservation { get; set; }    
 
         public override void Validar()
         {

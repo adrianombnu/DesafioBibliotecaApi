@@ -1,5 +1,4 @@
-﻿using DesafioBibliotecaApi.Entities;
-using DesafioBibliotecaApi.Enumerados;
+﻿using DesafioBibliotecaApi.Enumerados;
 using System;
 using System.Collections.Generic;
 
@@ -13,6 +12,7 @@ namespace DesafioBibliotecaApi.DTOs
         public List<Guid> IdBooks { get; set; }
         public Guid IdClient { get; set; }
         public EStatusWithdraw StatusWithdraw { get; set; }
+        public Guid? IdReservation { get; set; }
 
 
     }

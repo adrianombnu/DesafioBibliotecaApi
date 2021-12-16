@@ -78,6 +78,12 @@ namespace DesafioBibliotecaApi.Services
 
         public ReservationDTO Update(Guid idReservation, Reservation reservation)
         {
+            if (reservation.StartDate.Date < DateTime.Now.Date)
+                throw new Exception("Start data must be greater than: " + DateTime.Now.ToString("dd/MM/yyyy"));
+
+            if (reservation.EndDate.Date < reservation.StartDate.Date)
+                throw new Exception("End data must be greater than: " + reservation.StartDate.ToString("dd/MM/yyyy"));
+
             foreach (var b in reservation.IdBooks)
             {
                 var book = _bookRepository.Get(b);
@@ -171,7 +177,12 @@ namespace DesafioBibliotecaApi.Services
 
         }
 
-        public IEnumerable<ReservationFilterDTO> GetFilter(DateTime? startDate = null, DateTime? endDate = null, string? author = null, string? bookName = null, int page = 1, int itens = 50)
+        public IEnumerable<ReservationFilterDTO> GetFilter(DateTime? startDate = null,
+                                                           DateTime? endDate = null,
+                                                           string? author = null,
+                                                           string? bookName = null,
+                                                           int page = 1,
+                                                           int itens = 50)
         {
             var allReservations = _reservationRepository.GetAll();
             var myReservations = new List<ReservationFilterDTO>();
@@ -224,7 +235,7 @@ namespace DesafioBibliotecaApi.Services
             if (!string.IsNullOrEmpty(author))
                 myReservations.Where(x => x.Books.Any(s => s.Author.Name == author));
 
-            return myReservations;
+            return myReservations.Skip((page - 1) * itens).Take(itens); 
 
         }
 
@@ -280,16 +291,6 @@ namespace DesafioBibliotecaApi.Services
 
             return count;
         }
-
-        public bool FindPendenteReservation(Guid idBook, DateTime startDate, DateTime endDate, Guid idClient)
-        {
-            var allReservations = _reservationRepository.GetPendentReservationByPeriod(startDate, endDate, idBook, idClient);
-
-            if (allReservations.Count() > 0)
-                return true;
-            else
-                return false;
-        }
-
+                
     }
 }

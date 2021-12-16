@@ -1,6 +1,5 @@
 ﻿using DesafioBibliotecaApi.Entidades;
 using System;
-using System.Collections.Generic;
 
 namespace DesafioBibliotecaApi.Entities
 {

@@ -5,7 +5,6 @@ using DesafioBibliotecaApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace DesafioBibliotecaApi.Controllers
@@ -144,7 +143,11 @@ namespace DesafioBibliotecaApi.Controllers
 
         //[HttpGet, Authorize, Route("users")]
         [HttpGet, Route("users")]
-        public IActionResult Get([FromQuery] string? name = null, [FromQuery] DateTime? birthdate = null, [FromQuery] string? document = null, [FromQuery] int page = 1, [FromQuery] int itens = 50)
+        public IActionResult Get([FromQuery] string? name = null,
+                                 [FromQuery] DateTime? birthdate = null,
+                                 [FromQuery] string? document = null,
+                                 [FromQuery] int page = 1,
+                                 [FromQuery] int itens = 50)
         {
             var users = _employeeService.GetFilter(name, birthdate, document, page, itens);
             return Ok(users);

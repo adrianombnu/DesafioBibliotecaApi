@@ -1,6 +1,5 @@
 ﻿using DesafioBibliotecaApi.DTOs;
 using DesafioBibliotecaApi.Entidades;
-using DesafioBibliotecaApi.Entities;
 using DesafioBibliotecaApi.Repositorio;
 using DesafioBibliotecaApi.Repository;
 using System;
@@ -13,15 +12,11 @@ namespace DesafioBibliotecaApi.Services
     {
         private readonly UserRepository _userRepository;
         private readonly ClientRepository _clientRepository;
-        private readonly AdressRepository _adressRepository;
-        private readonly JwtTokenService _tokenService;
 
-        public EmployeeService(UserRepository userRepository, ClientRepository clientRepository, AdressRepository adressRepository, JwtTokenService tokenService)
+        public EmployeeService(UserRepository userRepository, ClientRepository clientRepository)
         {
             _userRepository = userRepository;
             _clientRepository = clientRepository;
-            _adressRepository = adressRepository;
-            _tokenService = tokenService;
         }
 
         public UserDTO Create(User user)

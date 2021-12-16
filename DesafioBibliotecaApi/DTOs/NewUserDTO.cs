@@ -1,9 +1,6 @@
-﻿using DesafioBibliotecaApi.Entities;
-
-namespace DesafioBibliotecaApi.DTOs
+﻿namespace DesafioBibliotecaApi.DTOs
 {
-    public class NewUserDTO : Validator
-        
+    public class NewUserDTO : Validator        
     {
         public string Username { get; set; }
         public string Password { get; set; }        
