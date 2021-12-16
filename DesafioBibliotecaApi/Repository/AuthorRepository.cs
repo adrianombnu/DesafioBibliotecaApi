@@ -81,9 +81,9 @@ namespace DesafioBibliotecaApi.Repositorio
             return authors;
 
         }
-        public Author GetByUsername(string name)
+        public Author GetByDocument(string document)
         {
-            return _authors.Where(u => u.Name == name).FirstOrDefault();
+            return _authors.Where(u => u.Document == document).FirstOrDefault();
 
         }
 

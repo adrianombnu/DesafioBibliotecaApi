@@ -9,11 +9,11 @@ namespace DesafioBibliotecaApi.DTOs
         public UpdateClientDTO Client { get; set; }
 
         public override void Validar()
-        {            
-            Valido = true;
+        {
+            Success = true;
 
             if (Client is null )
-                Valido = false;
+                Success = false;
 
         }
 

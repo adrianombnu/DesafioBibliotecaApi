@@ -1,4 +1,6 @@
-﻿namespace DesafioBibliotecaApi.DTOs
+﻿using System.Collections.Generic;
+
+namespace DesafioBibliotecaApi.DTOs
 {
     public class NewUserEmployeeDTO : Validator
     {
@@ -9,19 +11,32 @@
 
         public override void Validar()
         {
-            Valido = true;
+            Success = true;
+            Errors = new List<string>();
 
             if (Username is null || Username.Length > 50)
-                Valido = false;
+            {
+                Success = false;
+                Errors.Add("Invalid username");
+            }
 
-            if (Password is null || Username.Length > 50)
-                Valido = false;
+            if (Password is null || Password.Length > 50)
+            {
+                Success = false;
+                Errors.Add("Invalid password");
+            }
 
             if (Role is null || Role.Length > 50)
-                Valido = false;
+            {
+                Success = false;
+                Errors.Add("Invalid role");
+            }
 
             if (Client is null)
-                Valido = false;
+            {
+                Success = false;
+                Errors.Add("Invalid client");
+            }
 
         }
 

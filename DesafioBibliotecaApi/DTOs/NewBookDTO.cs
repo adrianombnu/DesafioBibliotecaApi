@@ -14,19 +14,32 @@ namespace DesafioBibliotecaApi.DTOs
 
         public override void Validar()
         {
-            Valido = true;
+            Success = true;
+            Errors = new List<string>();
 
-            if (Name is null && Name.Length > 150)
-                Valido = false;
+            if (Name is null || Name.Length > 150)
+            {
+                Success = false;
+                Errors.Add("Invalid name");
+            }
 
-            if (Description is null && Description.Length > 150)
-                Valido = false;
+            if (Description is null || Description.Length > 150)
+            {
+                Success = false;
+                Errors.Add("Invalid description");
+            }
 
             if (AuthorId.ToString().Length < 0)
-                Valido = false;
+            {
+                Success = false;
+                Errors.Add("Author not informed");
+            }
 
             if (ReleaseYear <= 0)
-                Valido = false;
+            {
+                Success = false;
+                Errors.Add("Release year invalid");
+            }
         }
 
     }

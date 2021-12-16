@@ -32,8 +32,8 @@ namespace DesafioBibliotecaApi.Controllers
         {
             userDTO.Validar();
 
-            if (!userDTO.Valido)
-                return BadRequest("User invalid!");
+            if (!userDTO.Success)
+                return BadRequest(userDTO.Errors);
 
             var user = new User
             {
@@ -87,8 +87,8 @@ namespace DesafioBibliotecaApi.Controllers
         {
             userDTO.Validar();
 
-            if (!userDTO.Valido)
-                return BadRequest("User invalid!");
+            if (!userDTO.Success)
+                return BadRequest(userDTO.Errors);
 
             var client = new Client
             {

@@ -24,8 +24,8 @@ namespace DesafioBibliotecaApi.Controllers
         {
             withdrawDTO.Validar();
 
-            if (!withdrawDTO.Valido)
-                return BadRequest("Invalid withdraw!");
+            if (!withdrawDTO.Success)
+                return BadRequest(withdrawDTO.Errors);
 
             try
             {

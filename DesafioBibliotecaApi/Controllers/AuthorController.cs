@@ -25,12 +25,12 @@ namespace DesafioBibliotecaApi.Controllers
         {
             authorDTO.Validar();
 
-            if (!authorDTO.Valido)
-                return BadRequest("Invalid author!");
+            if (!authorDTO.Success)
+                return BadRequest(authorDTO.Errors);
 
             try
             {
-                var author = new Author(authorDTO.Name, authorDTO.Lastname, authorDTO.Nacionality, authorDTO.Age);
+                var author = new Author(authorDTO.Name, authorDTO.Lastname, authorDTO.Nacionality, authorDTO.Document, authorDTO.Age);
 
                 return Created("", _authorService.Create(author));
 
@@ -93,12 +93,12 @@ namespace DesafioBibliotecaApi.Controllers
         {
             authorDTO.Validar();
 
-            if (!authorDTO.Valido)
-                return BadRequest("Invalid author!");
+            if (!authorDTO.Success)
+                return BadRequest(authorDTO.Errors);
 
             try
             {
-                var author = new Author(authorDTO.Name, authorDTO.Lastname, authorDTO.Nacionality, authorDTO.Age);
+                var author = new Author(authorDTO.Name, authorDTO.Lastname, authorDTO.Nacionality, authorDTO.Document, authorDTO.Age);
 
                 return Created("", _authorService.UpdateAuthor(id, author));
 

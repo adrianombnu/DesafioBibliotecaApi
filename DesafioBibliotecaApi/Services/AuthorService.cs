@@ -18,7 +18,7 @@ namespace DesafioBibliotecaApi.Services
 
         public AuthorDTO Create(Author author)
         {
-            var authorExists = _authorRepository.GetByUsername(author.Name);
+            var authorExists = _authorRepository.GetByDocument(author.Document);
 
             if (authorExists != null)
                 throw new Exception("The author is already registered, try another one!");

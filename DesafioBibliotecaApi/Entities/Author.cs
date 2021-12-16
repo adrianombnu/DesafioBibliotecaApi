@@ -8,15 +8,17 @@ namespace DesafioBibliotecaApi.Entities
         public string Name { get; set; }
         public string Lastname { get; set; }
         public string Nacionality { get; set; }
+        public string Document { get; set; }
         public int Age { get; set; }
         public List<Book>? Books { get; set; }
 
-        public Author(string name, string lastname, string nacionality, int age)
+        public Author(string name, string lastname, string nacionality, string document, int age)
         {
             Name = name;
             Lastname = lastname;
             Nacionality = nacionality;
             Age = age;
+            Document = document;
             
         }
 
@@ -26,6 +28,7 @@ namespace DesafioBibliotecaApi.Entities
             Lastname = author.Lastname;
             Nacionality = author.Nacionality;
             Age = author.Age;
+            Document = author.Document;
 
 
         }

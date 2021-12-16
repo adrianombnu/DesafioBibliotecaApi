@@ -12,19 +12,19 @@ namespace DesafioBibliotecaApi.DTOs
         
         public override void Validar()
         {
-            Valido = true;
+            Success = true;
 
             if (string.IsNullOrEmpty(Id.ToString()))
-                Valido = false;
+                Success = false;
 
             if (string.IsNullOrEmpty(StartDate.ToString()))
-                Valido = false;
+                Success = false;
 
             if (string.IsNullOrEmpty(EndDate.ToString()))
-                Valido = false;
+                Success = false;
 
             if (idBooks is null)
-                Valido = false;
+                Success = false;
 
         }
     }

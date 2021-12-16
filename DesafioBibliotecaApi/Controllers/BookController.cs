@@ -25,8 +25,8 @@ namespace DesafioBibliotecaApi.Controllers
         {
             bookDTO.Validar();
 
-            if (!bookDTO.Valido)
-                return BadRequest("Invalid book!");
+            if (!bookDTO.Success)
+                return BadRequest(bookDTO.Errors);
 
             try
             {
@@ -96,8 +96,8 @@ namespace DesafioBibliotecaApi.Controllers
         {
             bookDTO.Validar();
 
-            if (!bookDTO.Valido)
-                return BadRequest("Invalid book!");
+            if (!bookDTO.Success)
+                return BadRequest(bookDTO.Errors);
 
             try
             {

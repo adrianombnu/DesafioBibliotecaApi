@@ -12,7 +12,6 @@ namespace DesafioBibliotecaApi.DTOs
         public List<BookFilterDTO> Books { get; set; }
         public EStatusWithdraw StatusWithdraw { get; set; }
         public Guid IdClient { get; set; }
-
         
     }
 }

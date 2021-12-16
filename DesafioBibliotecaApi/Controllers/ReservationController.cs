@@ -24,8 +24,8 @@ namespace DesafioBibliotecaApi.Controllers
         {
             reservationDTO.Validar();
 
-            if (!reservationDTO.Valido)
-                return BadRequest("Invalid reservation!");
+            if (!reservationDTO.Success)
+                return BadRequest(reservationDTO.Errors);
 
             try
             {
@@ -47,8 +47,8 @@ namespace DesafioBibliotecaApi.Controllers
         {
             reservationDTO.Validar();
 
-            if (!reservationDTO.Valido)
-                return BadRequest("Invalid reservation!");
+            if (!reservationDTO.Success)
+                return BadRequest(reservationDTO.Errors);
 
             try
             {
