@@ -84,7 +84,7 @@ namespace DesafioBibliotecaApi.Repository
         public IEnumerable<Reservation> GetByPeriod(DateTime starDate, DateTime endDate, Guid idBook)
         {
             return _reservations.Where(a => ((a.StartDate.Date >= starDate.Date && a.StartDate.Date <= endDate.Date) || 
-                                             (a.EndDate.Date >= starDate.Date && a.StartDate.Date <= endDate.Date)) && 
+                                             (a.EndDate.Date >= starDate.Date && a.EndDate.Date <= endDate.Date)) && 
                                               a.StatusReservation == EStatusReservation.InProgress)
                                 .Where(x => x.IdBooks.Any(y => y == idBook));
         }
@@ -92,7 +92,7 @@ namespace DesafioBibliotecaApi.Repository
         public IEnumerable<Reservation> GetPendentReservationByPeriod(DateTime starDate, DateTime endDate, Guid idBook, Guid idClient)
         {
             return _reservations.Where(a => a.IdClient == idClient && ((a.StartDate.Date >= starDate.Date && a.StartDate.Date <= endDate.Date) || 
-                                                                       (a.EndDate.Date >= starDate.Date && a.StartDate.Date <= endDate.Date)) && 
+                                                                       (a.EndDate.Date >= starDate.Date && a.EndDate.Date <= endDate.Date)) && 
                                                                         a.StatusReservation == EStatusReservation.InProgress)
                                 .Where(x => x.IdBooks.Any(y => y == idBook));
 
