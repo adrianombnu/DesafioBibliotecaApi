@@ -95,7 +95,7 @@ namespace DesafioBibliotecaApi.Controllers
 
         //[HttpPut, Authorize(Roles = "admin, functionary"), Route("{id}/books")]
         [HttpPut,  Route("{id}/books")]
-        public IActionResult UpdateBook(Guid id, NewBookDTO bookDTO)
+        public IActionResult UpdateBook(Guid id, [FromBody] NewBookDTO bookDTO)
         {
             bookDTO.Validar();
 

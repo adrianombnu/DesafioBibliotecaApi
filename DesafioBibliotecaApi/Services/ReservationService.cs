@@ -68,21 +68,22 @@ namespace DesafioBibliotecaApi.Services
             if ((int)reservation.EndDate.Subtract(reservation.StartDate).TotalDays < minimumReserveLimit)
                 throw new Exception("Minimum limit for a 5-day booking.");
 
-            var reservationCreated = _reservationRepository.Create(reservation);
+            if (!_reservationRepository.Create(reservation))
+                throw new Exception("Reservation cannot be created!");
 
             return new ReservationDTO
             {
-                EndDate = reservationCreated.EndDate,
-                StartDate = reservationCreated.StartDate,
-                IdClient = reservationCreated.IdClient,
-                idBooks = reservationCreated.IdBooks,
-                Id = reservationCreated.Id,
-                StatusReservation = reservationCreated.StatusReservation
+                EndDate = reservation.EndDate,
+                StartDate = reservation.StartDate,
+                IdClient = reservation.IdClient,
+                idBooks = reservation.IdBooks,
+                Id = reservation.Id,
+                StatusReservation = reservation.StatusReservation
             };
 
         }
 
-        public ReservationDTO Update(Guid idReservation, Reservation reservation)
+        public ReservationDTO Update(Reservation reservation)
         {
             var minimumReserveLimit = _configuration.GetValue<int>("MinimumReserveLimit");
 
@@ -110,20 +111,26 @@ namespace DesafioBibliotecaApi.Services
             if ((int)reservation.EndDate.Subtract(reservation.StartDate).TotalDays < minimumReserveLimit)
                 throw new Exception("Minimum limit for a 5-day booking.");
 
-            var reservationCreated = _reservationRepository.Update(idReservation, reservation);
+            var reservationOld = _reservationRepository.Get(reservation.Id);
+
+            if (reservationOld is null)
+                throw new Exception("Reservation not found!");
+
+            _reservationRepository.Update(reservation);
 
             return new ReservationDTO
             {
-                EndDate = reservationCreated.EndDate,
-                StartDate = reservationCreated.StartDate,
-                IdClient = reservationCreated.IdClient,
-                idBooks = reservationCreated.IdBooks,
-                Id = reservationCreated.Id,
-                StatusReservation = reservationCreated.StatusReservation
+                EndDate = reservation.EndDate,
+                StartDate = reservation.StartDate,
+                IdClient = reservation.IdClient,
+                idBooks = reservation.IdBooks,
+                Id = reservation.Id,
+                StatusReservation = reservation.StatusReservation
 
             };
 
         }
+
 
         public IEnumerable<ReservationDTO> Get(Guid idUser)
         {
@@ -132,7 +139,7 @@ namespace DesafioBibliotecaApi.Services
             if (client == null)
                 throw new Exception("Client not found");
 
-            var reservations = _reservationRepository.Get(client.Id);
+            var reservations = _reservationRepository.GetByClientId(client.Id);
 
             return reservations.Select(a =>
             {
@@ -151,7 +158,7 @@ namespace DesafioBibliotecaApi.Services
 
         public bool CancelReservation(Guid idReservation)
         {
-            var reservation = _reservationRepository.GetById(idReservation);
+            var reservation = _reservationRepository.Get(idReservation);
 
             if (reservation.StatusReservation == EStatusReservation.Canceled)
                 throw new Exception("Reservation is already canceled.");
@@ -170,7 +177,7 @@ namespace DesafioBibliotecaApi.Services
 
         public bool FinalizeReservation(Guid idReservation)
         {
-            var reservation = _reservationRepository.GetById(idReservation);
+            var reservation = _reservationRepository.Get(idReservation);
 
             if (reservation.StatusReservation != EStatusReservation.Closed)
                 throw new Exception("Reservation is already canceled or closed.");
@@ -188,6 +195,7 @@ namespace DesafioBibliotecaApi.Services
         {
             var allReservations = _reservationRepository.GetAll();
             var myReservations = new List<ReservationFilterDTO>();
+            IEnumerable<ReservationFilterDTO> retorno = Enumerable.Empty<ReservationFilterDTO>();
 
             foreach (var l in allReservations)
             {
@@ -225,19 +233,21 @@ namespace DesafioBibliotecaApi.Services
 
             }
 
+            retorno = myReservations;
+
             if (startDate.HasValue)
-                myReservations.Where(x => x.StartDate.ToString("MM/dd/yyyy") == startDate.Value.ToString("MM/dd/yyyy"));
+                retorno = retorno.Where(x => x.StartDate.ToString("MM/dd/yyyy") == startDate.Value.ToString("MM/dd/yyyy"));
 
             if (endDate.HasValue)
-                myReservations.Where(x => x.EndDate.ToString("MM/dd/yyyy") == endDate.Value.ToString("MM/dd/yyyy"));
+                retorno = retorno.Where(x => x.EndDate.ToString("MM/dd/yyyy") == endDate.Value.ToString("MM/dd/yyyy"));
 
             if (!string.IsNullOrEmpty(bookName))
-                myReservations.Where(x => x.Books.Any(s => s.Name == bookName));
+                retorno = retorno.Where(x => x.Books.Any(s => s.Name == bookName));
 
             if (!string.IsNullOrEmpty(author))
-                myReservations.Where(x => x.Books.Any(s => s.Author.Name == author));
+                retorno = retorno.Where(x => x.Books.Any(s => s.Author.Name == author));
 
-            return myReservations.Skip((page - 1) * itens).Take(itens); 
+            return retorno.Skip((page - 1) * itens).Take(itens); 
 
         }
 

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace DesafioBibliotecaApi.Entities
 {
-    public class Withdraw : Base
+    public class Withdraw : BaseEntity<Guid>
     {
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
@@ -22,6 +22,7 @@ namespace DesafioBibliotecaApi.Entities
             IdBooks = idBooks;
             IdClient = idClient;
             IdReservation = idReservation;
+            Id = Guid.NewGuid();
         }
 
         public void FinalizeWithdraw()

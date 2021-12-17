@@ -6,37 +6,25 @@ using System.Linq;
 
 namespace DesafioBibliotecaApi.Repository
 {
-    public class WithdrawRepository
+    public class WithdrawRepository : BaseRepository<Guid, Withdraw>
     {
-        private readonly List<Withdraw> _withdraws;
-        public WithdrawRepository()
+        public IEnumerable<Withdraw> GetByIdClient(Guid idClient)
         {
-            _withdraws ??= new List<Withdraw>();
-        }
+            IEnumerable<Withdraw> retorno = _store.Values;
 
-        public Withdraw Create(Withdraw withdraw)
-        {
-            withdraw.Id = Guid.NewGuid();
-            _withdraws.Add(withdraw);
-
-            return withdraw;
-        }
-
-        public IEnumerable<Withdraw> Get(Guid idClient)
-        {
-            return _withdraws.Where(a => a.IdClient == idClient);
+            return retorno.Where(a => a.IdClient == idClient);
 
         }
 
         public IEnumerable<Withdraw> GetAll()
         {
-            return _withdraws;
+            return _store.Values;
 
         }
 
         public bool FinalizeWithdraw(Guid idWithdraw)
         {
-            var withdraw = _withdraws.Where(a => a.Id == idWithdraw).SingleOrDefault();
+            var withdraw = _store.Where(a => a.Value.Id == idWithdraw).SingleOrDefault().Value;
 
             if (withdraw is null)
                 throw new Exception("Withdraw not found.");
@@ -47,21 +35,13 @@ namespace DesafioBibliotecaApi.Repository
 
         }
 
-        public Withdraw GetById(Guid idWithdraw)
-        {
-            var withdraw = _withdraws.Where(a => a.Id == idWithdraw).SingleOrDefault();
-
-            if (withdraw is null)
-                throw new Exception("Withdraw not found.");
-
-            return withdraw;
-        }
-
         public IEnumerable<Withdraw> GetByPeriod(DateTime starDate, DateTime endDate, Guid idBook)
         {
-            return _withdraws.Where(a => ((a.StartDate.Date >= starDate.Date && a.StartDate.Date <= endDate.Date) ||
-                                          (a.EndDate.Date >= starDate.Date && a.EndDate.Date <= endDate.Date)) && 
-                                          a.StatusWithdraw == EStatusWithdraw.InProgress)
+            IEnumerable<Withdraw> retorno = _store.Values;
+
+            return retorno.Where(a => ((a.StartDate.Date >= starDate.Date && a.StartDate.Date <= endDate.Date) ||
+                                      (a.EndDate.Date >= starDate.Date && a.EndDate.Date <= endDate.Date)) && 
+                                       a.StatusWithdraw == EStatusWithdraw.InProgress)
                              .Where(x => x.IdBooks.Any(y => y == idBook));
 
         }

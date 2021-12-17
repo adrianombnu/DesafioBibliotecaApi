@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace DesafioBibliotecaApi.Entities
 {
-    public class Reservation : Base
+    public class Reservation : BaseEntity<Guid>
     {
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
@@ -20,14 +20,17 @@ namespace DesafioBibliotecaApi.Entities
             StatusReservation = EStatusReservation.InProgress;
             IdBooks = idBooks;
             IdClient = idClient;
+            Id = Guid.NewGuid();
         }
-        public Reservation(DateTime startDate, DateTime endDate, List<Guid> idBooks)
+        public Reservation(DateTime startDate, DateTime endDate, List<Guid> idBooks, Guid idClient, Guid idReservation)
         {
             StartDate = startDate;
             EndDate = endDate;
             StatusReservation = EStatusReservation.InProgress;
             IdBooks = idBooks;
-            
+            IdClient = idClient;
+            Id = idReservation;
+
         }
 
         public void CancelReservation()

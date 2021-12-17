@@ -63,7 +63,7 @@ namespace DesafioBibliotecaApi.Services
             var author = _authorRepository.Get(id);
 
             if (author is null)
-                throw new Exception("Author not founded!");
+                throw new Exception("Author not found!");
 
             return new AuthorDTO
             {
@@ -81,7 +81,7 @@ namespace DesafioBibliotecaApi.Services
             var author = _authorRepository.Get(id);
 
             if (author is null)
-                throw new Exception("Author not founded!");
+                throw new Exception("Author not found!");
 
             return _authorRepository.Delete(author);
 
@@ -91,7 +91,7 @@ namespace DesafioBibliotecaApi.Services
             var authorOld = _authorRepository.Get(author.Id);
 
             if (authorOld is null)
-                throw new Exception("Author not founded!");
+                throw new Exception("Author not found!");
 
             _authorRepository.Update(author);
 

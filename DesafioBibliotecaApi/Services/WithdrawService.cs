@@ -41,7 +41,7 @@ namespace DesafioBibliotecaApi.Services
 
             if (withdraw.IdReservation is not null)
             {
-                var reservation = _reservationRepository.GetById(withdraw.IdReservation.Value);
+                var reservation = _reservationRepository.Get(withdraw.IdReservation.Value);
 
                 if (reservation.StatusReservation != EStatusReservation.InProgress)
                     throw new Exception("Reservation already closed or canceled.");
@@ -52,17 +52,19 @@ namespace DesafioBibliotecaApi.Services
                 FinalizeReservation(reservation.Id);
 
                 var newWithdraw = new Withdraw(DateTime.Now, reservation.EndDate, reservation.IdBooks, reservation.IdClient, reservation.Id);
-                var withdrawCreated = _withdrawRepository.Create(newWithdraw);
+                
+                if (!_withdrawRepository.Create(newWithdraw))
+                    throw new Exception("Withdraw cannot be created!");
 
                 return new WithdrawDTO
                 {
-                    EndDate = withdrawCreated.EndDate,
-                    StartDate = withdrawCreated.StartDate,
-                    IdClient = withdrawCreated.IdClient,
-                    IdBooks = withdrawCreated.IdBooks,
-                    Id = withdrawCreated.Id,
-                    StatusWithdraw = withdrawCreated.StatusWithdraw,
-                    IdReservation = withdrawCreated.IdReservation,
+                    EndDate = newWithdraw.EndDate,
+                    StartDate = newWithdraw.StartDate,
+                    IdClient = newWithdraw.IdClient,
+                    IdBooks = newWithdraw.IdBooks,
+                    Id = newWithdraw.Id,
+                    StatusWithdraw = newWithdraw.StatusWithdraw,
+                    IdReservation = newWithdraw.IdReservation,
                     
                 };
 
@@ -101,16 +103,17 @@ namespace DesafioBibliotecaApi.Services
                 if ((int)withdraw.EndDate.Subtract(withdraw.StartDate).TotalDays < minimumReserveLimit)
                     throw new Exception("Minimum limit for a 5-day booking.");
 
-                var withdrawCreated = _withdrawRepository.Create(withdraw);
+                if (!_withdrawRepository.Create(withdraw))
+                    throw new Exception("Withdraw cannot be created!");
 
                 return new WithdrawDTO
                 {
-                    EndDate = withdrawCreated.EndDate,
-                    StartDate = withdrawCreated.StartDate,
-                    IdClient = withdrawCreated.IdClient,
-                    IdBooks = withdrawCreated.IdBooks,
-                    Id = withdrawCreated.Id,
-                    StatusWithdraw = withdrawCreated.StatusWithdraw
+                    EndDate = withdraw.EndDate,
+                    StartDate = withdraw.StartDate,
+                    IdClient = withdraw.IdClient,
+                    IdBooks = withdraw.IdBooks,
+                    Id = withdraw.Id,
+                    StatusWithdraw = withdraw.StatusWithdraw
                 };
 
             }
@@ -124,7 +127,7 @@ namespace DesafioBibliotecaApi.Services
             if (client == null)
                 throw new Exception("Client not found");
 
-            var withdraws = _withdrawRepository.Get(client.Id).Where(x => x.StatusWithdraw == EStatusWithdraw.InProgress);
+            var withdraws = _withdrawRepository.GetByIdClient(client.Id).Where(x => x.StatusWithdraw == EStatusWithdraw.InProgress);
 
             return withdraws.Select(a =>
             {
@@ -143,7 +146,10 @@ namespace DesafioBibliotecaApi.Services
 
         public bool FinalizeWithdraw(Guid idWithdraw)
         {
-            var withdraw = _withdrawRepository.GetById(idWithdraw);
+            var withdraw = _withdrawRepository.Get(idWithdraw);
+
+            if(withdraw is null)
+                throw new Exception("Reservation not found");
 
             if (withdraw.StatusWithdraw == EStatusWithdraw.Closed)
                 throw new Exception("Reservation is already closed.");
@@ -161,6 +167,7 @@ namespace DesafioBibliotecaApi.Services
         {
             var allWithdraws = _withdrawRepository.GetAll();
             var myWithdraws = new List<WithdrawFilterDTO>();
+            IEnumerable<WithdrawFilterDTO> retorno = Enumerable.Empty<WithdrawFilterDTO>();
 
             foreach (var l in allWithdraws)
             {
@@ -198,19 +205,21 @@ namespace DesafioBibliotecaApi.Services
 
             }
 
-            if (startDate.HasValue)
-                myWithdraws.Where(x => x.StartDate.ToString("MM/dd/yyyy") == startDate.Value.ToString("MM/dd/yyyy"));
+            retorno = myWithdraws;
 
+            if (startDate.HasValue)
+                retorno = retorno.Where(x => x.StartDate.Date.ToString("MM/dd/yyyy") == startDate.Value.Date.ToString("MM/dd/yyyy"));
+            
             if (endDate.HasValue)
-                myWithdraws.Where(x => x.EndDate.ToString("MM/dd/yyyy") == endDate.Value.ToString("MM/dd/yyyy"));
+                retorno = retorno.Where(x => x.EndDate.ToString("MM/dd/yyyy") == endDate.Value.ToString("MM/dd/yyyy"));
 
             if (!string.IsNullOrEmpty(bookName))
-                myWithdraws.Where(x => x.Books.Any(s => s.Name == bookName));
+                retorno = retorno.Where(x => x.Books.Any(s => s.Name == bookName));
 
             if (!string.IsNullOrEmpty(author))
-                myWithdraws.Where(x => x.Books.Any(s => s.Author.Name == author));
+                retorno = retorno.Where(x => x.Books.Any(s => s.Author.Name == author));
 
-            return myWithdraws.Skip((page - 1) * itens).Take(itens);
+            return retorno.Skip((page - 1) * itens).Take(itens);
 
         }
 
@@ -262,7 +271,7 @@ namespace DesafioBibliotecaApi.Services
 
         public bool FinalizeReservation(Guid idReservation)
         {
-            var reservation = _reservationRepository.GetById(idReservation);
+            var reservation = _reservationRepository.Get(idReservation);
 
             if (reservation.StatusReservation != EStatusReservation.InProgress)
                 throw new Exception("Reservation is already canceled or closed.");

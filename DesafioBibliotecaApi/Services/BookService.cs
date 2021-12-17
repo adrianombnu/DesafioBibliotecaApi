@@ -85,7 +85,7 @@ namespace DesafioBibliotecaApi.Services
             var book = _bookRepository.Get(id);
 
             if (book is null)
-                throw new Exception("Book not founded!");
+                throw new Exception("Book not found!");
 
             return _bookRepository.Delete(book);
 
@@ -96,7 +96,7 @@ namespace DesafioBibliotecaApi.Services
             var bookOld = _bookRepository.Get(book.Id);
 
             if (bookOld is null)
-                throw new Exception("Book not founded!");
+                throw new Exception("Book not found!");
 
             _bookRepository.Update(book);
 

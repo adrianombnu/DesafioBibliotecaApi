@@ -6,43 +6,20 @@ using System.Linq;
 
 namespace DesafioBibliotecaApi.Repository
 {
-    public class ReservationRepository
+    public class ReservationRepository : BaseRepository<Guid, Reservation>
     {
-        private readonly List<Reservation> _reservations;
-        public ReservationRepository()
+        public IEnumerable<Reservation> GetByClientId(Guid idClient)
         {
-            _reservations ??= new List<Reservation>();
-        }
+            IEnumerable<Reservation> retorno = _store.Values;
 
-        public Reservation Create(Reservation reservation)
-        {
-            reservation.Id = Guid.NewGuid();
-            _reservations.Add(reservation);
-
-            return reservation;
-        }
-
-        public Reservation Update(Guid idReservation, Reservation reservation)
-        {
-            var reserve = _reservations.Where(a => a.Id == idReservation).SingleOrDefault();
-
-            if (reserve is null)
-                throw new Exception("Reservation not found.");
-
-            reserve.Update(reservation);
-
-            return reserve;
+            return retorno.Where(a => a.IdClient == idClient);
 
         }
 
-        public IEnumerable<Reservation> Get(Guid idClient)
-        {
-            return _reservations.Where(a => a.IdClient == idClient);
 
-        }
         public bool CancelReservation(Guid idReservation)
         {
-            var reservataion = _reservations.Where(a => a.Id == idReservation).SingleOrDefault();
+            var reservataion = _store.Where(a => a.Value.Id == idReservation).SingleOrDefault().Value;
 
             if (reservataion is null)
                 throw new Exception("Reservation not found.");
@@ -54,7 +31,7 @@ namespace DesafioBibliotecaApi.Repository
         }
         public bool FinalizeReservation(Guid idReservation)
         {
-            var reservataion = _reservations.Where(a => a.Id == idReservation).SingleOrDefault();
+            var reservataion = _store.Where(a => a.Value.Id == idReservation).SingleOrDefault().Value;
 
             if (reservataion is null)
                 throw new Exception("Reservation not found.");
@@ -65,36 +42,30 @@ namespace DesafioBibliotecaApi.Repository
 
         }
 
-        public Reservation GetById(Guid idReservation)
-        {
-            var reservation = _reservations.Where(a => a.Id == idReservation).SingleOrDefault();
-
-            if (reservation is null)
-                throw new Exception("Reservation not found.");
-
-            return reservation;
-        }
-
         public IEnumerable<Reservation> GetAll()
         {
-            return _reservations;
+            return _store.Values;
 
         }
 
         public IEnumerable<Reservation> GetByPeriod(DateTime starDate, DateTime endDate, Guid idBook)
         {
-            return _reservations.Where(a => ((a.StartDate.Date >= starDate.Date && a.StartDate.Date <= endDate.Date) || 
+            IEnumerable<Reservation> retorno = _store.Values;
+
+            return retorno.Where(a => ((a.StartDate.Date >= starDate.Date && a.StartDate.Date <= endDate.Date) || 
                                              (a.EndDate.Date >= starDate.Date && a.EndDate.Date <= endDate.Date)) && 
                                               a.StatusReservation == EStatusReservation.InProgress)
-                                .Where(x => x.IdBooks.Any(y => y == idBook));
+                           .Where(x => x.IdBooks.Any(y => y == idBook));
         }
 
         public IEnumerable<Reservation> GetPendentReservationByPeriod(DateTime starDate, DateTime endDate, Guid idBook, Guid idClient)
         {
-            return _reservations.Where(a => a.IdClient == idClient && ((a.StartDate.Date >= starDate.Date && a.StartDate.Date <= endDate.Date) || 
-                                                                       (a.EndDate.Date >= starDate.Date && a.EndDate.Date <= endDate.Date)) && 
-                                                                        a.StatusReservation == EStatusReservation.InProgress)
-                                .Where(x => x.IdBooks.Any(y => y == idBook));
+            IEnumerable<Reservation> retorno = _store.Values;
+
+            return retorno.Where(a => a.IdClient == idClient && ((a.StartDate.Date >= starDate.Date && a.StartDate.Date <= endDate.Date) || 
+                                                                 (a.EndDate.Date >= starDate.Date && a.EndDate.Date <= endDate.Date)) && 
+                                                                  a.StatusReservation == EStatusReservation.InProgress)
+                          .Where(x => x.IdBooks.Any(y => y == idBook));
 
         }
 

@@ -9,7 +9,9 @@ namespace DesafioBibliotecaApi.DTOs
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public List<Guid> idBooks { get; set; }
-        
+
+        public Guid IdClient { get; set; }
+
         public override void Validar()
         {
             Success = true;

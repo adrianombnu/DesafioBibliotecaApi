@@ -43,7 +43,7 @@ namespace DesafioBibliotecaApi.Controllers
 
         //[HttpPut, Authorize, Route("reservations")]
         [HttpPut, Route("reservations")]
-        public IActionResult Update([FromBody] UpdateReservationDTO reservationDTO)
+        public IActionResult Update(Guid id, [FromBody] UpdateReservationDTO reservationDTO)
         {
             reservationDTO.Validar();
 
@@ -52,9 +52,9 @@ namespace DesafioBibliotecaApi.Controllers
 
             try
             {
-                var reservation = new Reservation(reservationDTO.StartDate, reservationDTO.EndDate, reservationDTO.idBooks);
+                var reservation = new Reservation(reservationDTO.StartDate, reservationDTO.EndDate, reservationDTO.idBooks, reservationDTO.IdClient, id);
 
-                return Created("", _reservationService.Update(reservationDTO.Id, reservation));
+                return Created("", _reservationService.Update(reservation));
 
             }
             catch (Exception ex)
