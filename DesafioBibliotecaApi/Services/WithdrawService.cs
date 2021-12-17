@@ -3,6 +3,7 @@ using DesafioBibliotecaApi.Entities;
 using DesafioBibliotecaApi.Enumerados;
 using DesafioBibliotecaApi.Repositorio;
 using DesafioBibliotecaApi.Repository;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,23 +17,28 @@ namespace DesafioBibliotecaApi.Services
         private readonly AuthorRepository _authorRepository;
         private readonly ClientRepository _clientRepository;
         private readonly WithdrawRepository _withdrawRepository;
+        private readonly IConfiguration _configuration;
 
         public WithdrawService(ReservationRepository repository,
                                BookRepository bookRepository,
                                AuthorRepository authorRepository,
                                ClientRepository clientRepository,
-                               WithdrawRepository withdrawRepository)
+                               WithdrawRepository withdrawRepository,
+                               IConfiguration configuration)
         {
             _reservationRepository = repository;
             _bookRepository = bookRepository;
             _clientRepository = clientRepository;
             _authorRepository = authorRepository;
             _withdrawRepository = withdrawRepository;
+            _configuration = configuration;
 
         }
 
         public WithdrawDTO Create(Withdraw withdraw)
         {
+            var minimumReserveLimit = _configuration.GetValue<int>("MinimumReserveLimit");
+
             if (withdraw.IdReservation is not null)
             {
                 var reservation = _reservationRepository.GetById(withdraw.IdReservation.Value);
@@ -92,7 +98,7 @@ namespace DesafioBibliotecaApi.Services
                 if (client == null)
                     throw new Exception("Client not found");
 
-                if ((int)withdraw.EndDate.Subtract(withdraw.StartDate).TotalDays < 5)
+                if ((int)withdraw.EndDate.Subtract(withdraw.StartDate).TotalDays < minimumReserveLimit)
                     throw new Exception("Minimum limit for a 5-day booking.");
 
                 var withdrawCreated = _withdrawRepository.Create(withdraw);

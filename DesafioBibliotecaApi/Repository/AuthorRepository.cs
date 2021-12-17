@@ -1,22 +1,17 @@
 ﻿using DesafioBibliotecaApi.Entities;
+using DesafioBibliotecaApi.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace DesafioBibliotecaApi.Repositorio
 {
-    public class AuthorRepository
+    public class AuthorRepository : BaseRepository<Guid, Author>
     {
-        private readonly List<Author> _authors;
-        public AuthorRepository()
-        {
-            _authors ??= new List<Author>();
-        }
-
         public IEnumerable<Author> Get(string? name = null, string? nationality = null, int? age = null, int page = 1, int itens = 50)
         {
-            IEnumerable<Author> retorno = _authors;
-            
+            IEnumerable<Author> retorno = _store.Values;
+
             if (!String.IsNullOrEmpty(name))
                 retorno = retorno.Where(x => x.Name == name);
 
@@ -30,68 +25,12 @@ namespace DesafioBibliotecaApi.Repositorio
 
         }
 
-        public Author Get(Guid id)
-        {
-            var authors = _authors.Where(a => a.Id == id).SingleOrDefault();
-               
-            if(authors is null)
-                throw new Exception("Author not found.");
-
-            return authors;
-
-        }               
-
-        public Author Create(Author author)
-        {
-            author.Id = Guid.NewGuid();
-            _authors.Add(author);    
-                
-            return author;
-        }
-
-
-        public bool Remove(Guid id)
-        {
-            var retorno = true;
-
-            var cliente = _authors.SingleOrDefault(u => u.Id == id);
-
-            if (cliente is null)
-            {
-                retorno = false;
-            }
-            else
-            {
-                _authors.Remove(cliente);
-            }
-
-            return retorno;
-
-        }
-
-        public Author Update(Guid id, Author author)
-        {
-            var authors = _authors.Where(a => a.Id == id).SingleOrDefault();
-
-            if (authors is null)
-                throw new Exception("Author not found.");
-
-            authors.Update(author);
-
-            return authors;
-
-        }
         public Author GetByDocument(string document)
         {
-            return _authors.Where(u => u.Document == document).FirstOrDefault();
+            return _store.Where(u => u.Value.Document == document).FirstOrDefault().Value;
 
         }
 
-        public IEnumerable<Author> GetAll()
-        {
-            return _authors;
-
-        }
     }
 
 }

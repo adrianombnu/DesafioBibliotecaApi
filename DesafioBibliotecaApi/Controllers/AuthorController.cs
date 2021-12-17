@@ -47,24 +47,25 @@ namespace DesafioBibliotecaApi.Controllers
         [HttpGet, Route("authors")]
         public IActionResult Get([FromQuery] string? name, [FromQuery] string? nationality, [FromQuery] int? age, [FromQuery] int page = 1, [FromQuery] int itens = 50)
         {
-            try
-            {
-                var userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
+            //try
+           // {
+             //   var userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
 
-            }
-            catch (Exception ex)
-            {
-                return BadRequest("User not authenticated");
-            }
+            //}
+            //catch (Exception ex)
+            //{
+             //   return BadRequest("User not authenticated");
+            //}
 
             return Ok(_authorService.GetFilter(name, nationality, age, page, itens));
             
         }
 
-        [HttpGet, Authorize, Route("{id}/authors")]
+        //[HttpGet, Authorize, Route("{id}/authors")]
+        [HttpGet, Route("{id}/authors")]
         public IActionResult Get(Guid id)
         {
-            try
+            /*try
             {
                 var userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
 
@@ -73,13 +74,14 @@ namespace DesafioBibliotecaApi.Controllers
             {
                 return BadRequest("User not authenticated");
             }
-            
+            */
 
             return Ok(_authorService.Get(id));
 
         }
 
-        [HttpDelete, Authorize(Roles = "admin, functionary"), Route("{id}/authors")]
+        //[HttpDelete, Authorize(Roles = "admin, functionary"), Route("{id}/authors")]
+        [HttpDelete, Route("{id}/authors")]
         public IActionResult Delete(Guid id)
         {
             if (!_authorService.Delete(id))
@@ -88,7 +90,8 @@ namespace DesafioBibliotecaApi.Controllers
             return Ok("Author deleted with success.");
         }
 
-        [HttpPut, Authorize(Roles = "admin, functionary"), Route("authors")]
+        //[HttpPut, Authorize(Roles = "admin, functionary"), Route("authors")]
+        [HttpPut, Route("authors")]
         public IActionResult UpdateAuthor(Guid id, NewAuthorDTO authorDTO)
         {
             authorDTO.Validar();
@@ -98,9 +101,9 @@ namespace DesafioBibliotecaApi.Controllers
 
             try
             {
-                var author = new Author(authorDTO.Name, authorDTO.Lastname, authorDTO.Nacionality, authorDTO.Document, authorDTO.Age);
+                var author = new Author(authorDTO.Name, authorDTO.Lastname, authorDTO.Nacionality, authorDTO.Document, authorDTO.Age, id);
 
-                return Created("", _authorService.UpdateAuthor(id, author));
+                return Created("", _authorService.UpdateAuthor(author));
 
             }
             catch (Exception ex)

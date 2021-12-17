@@ -3,7 +3,7 @@ using System;
 
 namespace DesafioBibliotecaApi.Entities
 {
-    public class Book : Base
+    public class Book : BaseEntity<Guid> 
     {
         public Book(string name, string description, int releaseYear, Guid authorId, int quantityInventory)
         {
@@ -11,9 +11,19 @@ namespace DesafioBibliotecaApi.Entities
             Description = description;
             ReleaseYear = releaseYear;
             AuthorId = authorId;
-            QuantityAvailable = quantityInventory;
             QuantityInventory = quantityInventory;
+            Id = Guid.NewGuid();    
             
+        }
+        public Book(string name, string description, int releaseYear, Guid authorId, int quantityInventory, Guid idBook)
+        {
+            Name = name;
+            Description = description;
+            ReleaseYear = releaseYear;
+            AuthorId = authorId;
+            QuantityInventory = quantityInventory;
+            Id = idBook;
+
         }
 
         public string Name { get; set; }
@@ -21,8 +31,7 @@ namespace DesafioBibliotecaApi.Entities
         public int ReleaseYear { get; set; }
         public Guid AuthorId { get; set; }
         public int QuantityInventory { get; set; }
-        public int QuantityAvailable { get; set; }
-
+        
         public void Update(Book book)
         {
             Name = book.Name;
@@ -33,14 +42,6 @@ namespace DesafioBibliotecaApi.Entities
 
         }
 
-        public void UpdateAvailable(bool increment)
-        {
-            if(increment)
-                QuantityAvailable = ++QuantityAvailable;
-            else
-                QuantityAvailable = --QuantityAvailable;
-
-        }
 
     }
 }

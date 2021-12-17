@@ -3,6 +3,7 @@ using DesafioBibliotecaApi.Entities;
 using DesafioBibliotecaApi.Enumerados;
 using DesafioBibliotecaApi.Repositorio;
 using DesafioBibliotecaApi.Repository;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,24 +17,29 @@ namespace DesafioBibliotecaApi.Services
         private readonly AuthorRepository _authorRepository;
         private readonly ClientRepository _clientRepository;
         private readonly WithdrawRepository _withdrawRepository;
+        private readonly IConfiguration _configuration;
 
         public ReservationService(ReservationRepository repository,
                                   BookRepository bookRepository,
                                   AuthorRepository authorRepository,
                                   ClientRepository clientRepository,
-                                  WithdrawRepository withdrawRepository)
+                                  WithdrawRepository withdrawRepository,
+                                  IConfiguration configuration)
         {
             _reservationRepository = repository;
             _bookRepository = bookRepository;
             _clientRepository = clientRepository;
             _authorRepository = authorRepository;
             _withdrawRepository = withdrawRepository;
+            _configuration = configuration;
 
         }
 
         public ReservationDTO Create(Reservation reservation)
         {
-            if(reservation.StartDate.Date < DateTime.Now.Date)
+            var minimumReserveLimit = _configuration.GetValue<int>("MinimumReserveLimit");
+
+            if (reservation.StartDate.Date < DateTime.Now.Date)
                 throw new Exception("Start data must be greater than: " + DateTime.Now.ToString("dd/MM/yyyy"));
 
             if (reservation.EndDate.Date < reservation.StartDate.Date)
@@ -59,7 +65,7 @@ namespace DesafioBibliotecaApi.Services
             if (client == null)
                 throw new Exception("Client not found");
 
-            if ((int)reservation.EndDate.Subtract(reservation.StartDate).TotalDays < 5)
+            if ((int)reservation.EndDate.Subtract(reservation.StartDate).TotalDays < minimumReserveLimit)
                 throw new Exception("Minimum limit for a 5-day booking.");
 
             var reservationCreated = _reservationRepository.Create(reservation);
@@ -78,6 +84,8 @@ namespace DesafioBibliotecaApi.Services
 
         public ReservationDTO Update(Guid idReservation, Reservation reservation)
         {
+            var minimumReserveLimit = _configuration.GetValue<int>("MinimumReserveLimit");
+
             if (reservation.StartDate.Date < DateTime.Now.Date)
                 throw new Exception("Start data must be greater than: " + DateTime.Now.ToString("dd/MM/yyyy"));
 
@@ -99,7 +107,7 @@ namespace DesafioBibliotecaApi.Services
                 
             }
 
-            if ((int)reservation.EndDate.Subtract(reservation.StartDate).TotalDays < 5)
+            if ((int)reservation.EndDate.Subtract(reservation.StartDate).TotalDays < minimumReserveLimit)
                 throw new Exception("Minimum limit for a 5-day booking.");
 
             var reservationCreated = _reservationRepository.Update(idReservation, reservation);
@@ -155,12 +163,6 @@ namespace DesafioBibliotecaApi.Services
 
             if (reservation.StartDate.Date > lastWorkingDay.Date)
                 throw new Exception("The reservation can only be canceled up to one business day prior to the reservation date.");
-
-            foreach (var l in reservation.IdBooks)
-            {
-                _bookRepository.UpdateAvailable(l, true);
-
-            }
 
             return _reservationRepository.CancelReservation(idReservation);
 

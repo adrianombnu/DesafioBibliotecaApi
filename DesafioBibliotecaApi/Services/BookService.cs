@@ -30,16 +30,17 @@ namespace DesafioBibliotecaApi.Services
             if (bookExists != null)
                 throw new Exception("The book is already registered, try another one!");
 
-            var bookCreated = _bookRepository.Create(book);
+            if(!_bookRepository.Create(book))
+                throw new Exception("Book cannot be created!");
 
             return new BookDTO
             {
-                Id = bookCreated.Id,
-                Name = bookCreated.Name,
-                ReleaseYear = bookCreated.ReleaseYear,
-                Description = bookCreated.Description,
-                AuthorId = bookCreated.AuthorId,
-                QuantityInventory = bookCreated.QuantityInventory
+                Id = book.Id,
+                Name = book.Name,
+                ReleaseYear = book.ReleaseYear,
+                Description = book.Description,
+                AuthorId = book.AuthorId,
+                QuantityInventory = book.QuantityInventory
                
             };
 
@@ -58,8 +59,7 @@ namespace DesafioBibliotecaApi.Services
                     ReleaseYear = a.ReleaseYear,
                     Description = a.Description,
                     AuthorId = a.AuthorId,
-                    QuantityInventory = a.QuantityInventory,
-                    QuantityAvailable = a.QuantityAvailable
+                    QuantityInventory = a.QuantityInventory
                 };
             });
 
@@ -75,35 +75,43 @@ namespace DesafioBibliotecaApi.Services
                 ReleaseYear = book.ReleaseYear,
                 Description = book.Description,
                 AuthorId = book.AuthorId,
-                QuantityInventory = book.QuantityInventory,
-                QuantityAvailable = book.QuantityAvailable
+                QuantityInventory = book.QuantityInventory
 
             };
         }
 
         public bool Delete(Guid id)
         {
-            return _bookRepository.Remove(id);
+            var book = _bookRepository.Get(id);
 
-        }
-        public BookDTO UpdateBook(Guid id, Book book)
-        {
-            var books = _bookRepository.Get(id);
+            if (book is null)
+                throw new Exception("Book not founded!");
 
-            books.Update(book);
-
-            return new BookDTO
-            {
-                Id = books.Id,
-                Name = books.Name,
-                ReleaseYear = books.ReleaseYear,
-                Description = books.Description,
-                AuthorId = books.AuthorId,
-                QuantityInventory = books.QuantityInventory
-                
-            };
+            return _bookRepository.Delete(book);
 
         }
         
+        public BookDTO UpdateBook(Book book)
+        {
+            var bookOld = _bookRepository.Get(book.Id);
+
+            if (bookOld is null)
+                throw new Exception("Book not founded!");
+
+            _bookRepository.Update(book);
+
+            return new BookDTO
+            {
+                Id = book.Id,
+                Name = book.Name,
+                ReleaseYear = book.ReleaseYear,
+                Description = book.Description,
+                AuthorId = book.AuthorId,
+                QuantityInventory = book.QuantityInventory
+
+            };
+
+        }
+
     }
 }

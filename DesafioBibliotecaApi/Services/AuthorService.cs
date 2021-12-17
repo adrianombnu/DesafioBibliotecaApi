@@ -1,6 +1,7 @@
 ﻿using DesafioBibliotecaApi.DTOs;
 using DesafioBibliotecaApi.Entities;
 using DesafioBibliotecaApi.Repositorio;
+using DesafioBibliotecaApi.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,15 +24,17 @@ namespace DesafioBibliotecaApi.Services
             if (authorExists != null)
                 throw new Exception("The author is already registered, try another one!");
 
-            var userCreated = _authorRepository.Create(author);
+            if (!_authorRepository.Create(author))
+                throw new Exception("The author cannot be created!");
 
             return new AuthorDTO
             {
-                Name = userCreated.Name,
-                Lastname = userCreated.Lastname,
-                Nacionality = userCreated.Nacionality,
-                Age = userCreated.Age,
-                Id = userCreated.Id
+                Name = author.Name,
+                Lastname = author.Lastname,
+                Nacionality = author.Nacionality,
+                Age = author.Age,
+                Id = author.Id,
+                Document = author.Document
             };
 
         }
@@ -39,7 +42,7 @@ namespace DesafioBibliotecaApi.Services
         public IEnumerable<AuthorDTO> GetFilter(string? name = null, string? nationality = null, int? age = null, int page = 1, int itens = 50)
         {
             var authors = _authorRepository.Get(name, nationality, age, page, itens);
-            
+
             return authors.Select(a =>
             {
                 return new AuthorDTO
@@ -48,7 +51,8 @@ namespace DesafioBibliotecaApi.Services
                     Lastname = a.Lastname,
                     Nacionality = a.Nacionality,
                     Age = a.Age,
-                    Id = a.Id
+                    Id = a.Id,
+                    Document = a.Document
                 };
             });
 
@@ -58,26 +62,38 @@ namespace DesafioBibliotecaApi.Services
         {
             var author = _authorRepository.Get(id);
 
+            if (author is null)
+                throw new Exception("Author not founded!");
+
             return new AuthorDTO
             {
                 Name = author.Name,
                 Lastname = author.Lastname,
                 Nacionality = author.Nacionality,
                 Age = author.Age,
-                Id = author.Id
+                Id = author.Id,
+                Document = author.Document
             };
         }
 
         public bool Delete(Guid id)
         {
-            return _authorRepository.Remove(id);
+            var author = _authorRepository.Get(id);
+
+            if (author is null)
+                throw new Exception("Author not founded!");
+
+            return _authorRepository.Delete(author);
 
         }
-        public AuthorDTO UpdateAuthor(Guid id, Author author)
+        public AuthorDTO UpdateAuthor(Author author)
         {
-            var authors = _authorRepository.Get(id);
+            var authorOld = _authorRepository.Get(author.Id);
 
-            authors.Update(author);
+            if (authorOld is null)
+                throw new Exception("Author not founded!");
+
+            _authorRepository.Update(author);
 
             return new AuthorDTO
             {
@@ -85,7 +101,8 @@ namespace DesafioBibliotecaApi.Services
                 Lastname = author.Lastname,
                 Nacionality = author.Nacionality,
                 Age = author.Age,
-                Id = author.Id
+                Id = author.Id,
+                Document = author.Document
             };
 
         }

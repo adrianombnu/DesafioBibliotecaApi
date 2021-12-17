@@ -1,9 +1,10 @@
 ﻿using DesafioBibliotecaApi.Entidades;
+using System;
 using System.Collections.Generic;
 
 namespace DesafioBibliotecaApi.Entities
 {
-    public class Author : Base
+    public class Author : BaseEntity<Guid> 
     {
         public string Name { get; set; }
         public string Lastname { get; set; }
@@ -19,19 +20,20 @@ namespace DesafioBibliotecaApi.Entities
             Nacionality = nacionality;
             Age = age;
             Document = document;
+            Id = Guid.NewGuid();
             
         }
 
-        public void Update(Author author)
+        public Author(string name, string lastname, string nacionality, string document, int age, Guid idAuthor)
         {
-            Name = author.Name; 
-            Lastname = author.Lastname;
-            Nacionality = author.Nacionality;
-            Age = author.Age;
-            Document = author.Document;
-
+            Name = name;
+            Lastname = lastname;
+            Nacionality = nacionality;
+            Age = age;
+            Document = document;
+            Id = idAuthor;
 
         }
-                
+
     }
 }

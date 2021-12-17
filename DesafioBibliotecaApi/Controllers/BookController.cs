@@ -64,10 +64,11 @@ namespace DesafioBibliotecaApi.Controllers
                         
         }
 
-        [HttpGet, Authorize, Route("books/{id}")]
+        //[HttpGet, Authorize, Route("books/{id}")]
+        [HttpGet, Route("books/{id}")]
         public IActionResult Get(Guid id)
         {
-            try
+            /*try
             {
                 var userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
 
@@ -76,12 +77,13 @@ namespace DesafioBibliotecaApi.Controllers
             {
                 return BadRequest("User not authenticated");
             }
-
+            */
             return Ok(_bookService.Get(id));
 
         }
 
-        [HttpDelete, Authorize(Roles = "admin, functionary"), Route("{id}/books")]
+        //[HttpDelete, Authorize(Roles = "admin, functionary"), Route("{id}/books")]
+        [HttpDelete, Route("{id}/books")]
         public IActionResult Delete(Guid id)
         {
             if (!_bookService.Delete(id))
@@ -90,8 +92,9 @@ namespace DesafioBibliotecaApi.Controllers
             return Ok("Book deleted with success.");
         }
 
-        
-        [HttpPut, Authorize(Roles = "admin, functionary"), Route("{id}/books")]
+
+        //[HttpPut, Authorize(Roles = "admin, functionary"), Route("{id}/books")]
+        [HttpPut,  Route("{id}/books")]
         public IActionResult UpdateBook(Guid id, NewBookDTO bookDTO)
         {
             bookDTO.Validar();
@@ -101,9 +104,9 @@ namespace DesafioBibliotecaApi.Controllers
 
             try
             {
-                var book = new Book(bookDTO.Name, bookDTO.Description, bookDTO.ReleaseYear, bookDTO.AuthorId,bookDTO.QuantityInventory);
+                var book = new Book(bookDTO.Name, bookDTO.Description, bookDTO.ReleaseYear, bookDTO.AuthorId,bookDTO.QuantityInventory,id);
 
-                return Created("", _bookService.UpdateBook(id, book));
+                return Created("", _bookService.UpdateBook(book));
 
             }
             catch (Exception ex)

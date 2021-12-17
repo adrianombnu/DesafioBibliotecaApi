@@ -40,6 +40,12 @@ namespace DesafioBibliotecaApi.DTOs
                 Success = false;
                 Errors.Add("Release year invalid");
             }
+
+            if (QuantityInventory <= 0)
+            {
+                Success = false;
+                Errors.Add("Quantity Inventory invalid");
+            }
         }
 
     }
