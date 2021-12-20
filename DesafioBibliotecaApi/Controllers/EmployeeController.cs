@@ -35,51 +35,44 @@ namespace DesafioBibliotecaApi.Controllers
             if (!userEmployeeDTO.Success)
                 return BadRequest(userEmployeeDTO.Errors);
 
-            var user = new User
+            try
             {
-                Role = userEmployeeDTO.Role,
-                UserName = userEmployeeDTO.Username,
-                Password = userEmployeeDTO.Password,
-                Id = Guid.NewGuid()
-            };
+                var user = new User(userEmployeeDTO.Username, userEmployeeDTO.Password, userEmployeeDTO.Role);
 
-            var client = new Client
-            {
-                Name = userEmployeeDTO.Client.Name,
-                Lastname = userEmployeeDTO.Client.Lastname,
-                Age = userEmployeeDTO.Client.Age,
-                Document = userEmployeeDTO.Client.Document,
-                ZipCode = userEmployeeDTO.Client.ZipCode,
-                IdUser = user.Id,
-                Birthdate = userEmployeeDTO.Client.Birthdate,
-                Id = Guid.NewGuid()
+                var client = new Client(userEmployeeDTO.Client.Name,
+                                        userEmployeeDTO.Client.Lastname,
+                                        userEmployeeDTO.Client.Document,
+                                        userEmployeeDTO.Client.Age,
+                                        userEmployeeDTO.Client.ZipCode,
+                                        userEmployeeDTO.Client.Birthdate,
+                                        user.Id);
 
-            };
+                if (userEmployeeDTO.Client.Adress is null)
+                {
+                    var responseAdress = await _adressService.FindAdress(userEmployeeDTO.Client.ZipCode);
+                    client.Adress = responseAdress;
 
-            if (userEmployeeDTO.Client.Adress is null)
-            {
-                var responseAdress = await _adressService.FindAdress(userEmployeeDTO.Client.ZipCode);
-                client.Adress = responseAdress;
+                }
+                else
+                {
+                    client.Adress = new Adress(userEmployeeDTO.Client.ZipCode,
+                                               userEmployeeDTO.Client.Adress.Street,
+                                               userEmployeeDTO.Client.Adress.Complement,
+                                               userEmployeeDTO.Client.Adress.District,
+                                               userEmployeeDTO.Client.Adress.Location,
+                                               userEmployeeDTO.Client.Adress.State,
+                                               client);
+
+                }
+
+                _employeeService.Create(user);
+                return Created("", _clientService.Create(client));
 
             }
-            else
+            catch (Exception ex)
             {
-                client.Adress = new Adress
-                {
-                    Location = userEmployeeDTO.Client.Adress.Location,
-                    District = userEmployeeDTO.Client.Adress.District,
-                    State = userEmployeeDTO.Client.Adress.State,
-                    Street = userEmployeeDTO.Client.Adress.Street,
-                    Complement = userEmployeeDTO.Client.Adress.Complement,
-                    Client = client,
-                    ZipCode = userEmployeeDTO.Client.ZipCode
-
-                };
-
-            } 
-
-            _employeeService.Create(user);
-            return Created("", _clientService.Create(client));
+                return BadRequest("Error creating user : " + ex.Message);
+            }
 
         }
 
@@ -92,44 +85,59 @@ namespace DesafioBibliotecaApi.Controllers
             if (!userDTO.Success)
                 return BadRequest(userDTO.Errors);
 
-            var client = new Client
-            {
-                Name = userDTO.Client.Name,
-                Lastname = userDTO.Client.Lastname,
-                Age = userDTO.Client.Age,
-                Document = userDTO.Client.Document,
-                ZipCode = userDTO.Client.ZipCode,
-                IdUser = userDTO.Id,
-                Birthdate = userDTO.Client.Birthdate,
-                Id = userDTO.Id
+            var userId = string.Empty;
 
-            };
-
-            if (userDTO.Client.Adress is null)
+            try
             {
-                var responseAdress = await _adressService.FindAdress(userDTO.Client.ZipCode);
-                client.Adress = responseAdress;
-                client.Adress.Client = client;
+                userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
 
             }
-            else
+            catch (Exception ex)
             {
-                client.Adress = new Adress
+                return BadRequest("User not authenticated");
+            }
+
+            try
+            {
+                var idClient = _clientService.FindIdClient(Guid.Parse(userId));
+
+                if (string.IsNullOrEmpty(idClient.ToString()))
+                    return BadRequest("Client not found");
+
+                var client = new Client(userDTO.Client.Name,
+                                        userDTO.Client.Lastname,
+                                        userDTO.Client.Document,
+                                        userDTO.Client.Age,
+                                        userDTO.Client.ZipCode,
+                                        userDTO.Client.Birthdate,
+                                        Guid.Parse(userId),
+                                        idClient);
+
+                if (userDTO.Client.Adress is null)
                 {
-                    Location = userDTO.Client.Adress.Location,
-                    District = userDTO.Client.Adress.District,
-                    State = userDTO.Client.Adress.State,
-                    Street = userDTO.Client.Adress.Street,
-                    Complement = userDTO.Client.Adress.Complement,
-                    Client = client,
-                    ZipCode = userDTO.Client.ZipCode
+                    var responseAdress = await _adressService.FindAdress(userDTO.Client.ZipCode);
+                    client.Adress = responseAdress;
+                    client.Adress.Client = client;
 
-                };
+                }
+                else
+                {
+                    client.Adress = new Adress(userDTO.Client.ZipCode,
+                                               userDTO.Client.Adress.Street,
+                                               userDTO.Client.Adress.Complement,
+                                               userDTO.Client.Adress.District,
+                                               userDTO.Client.Adress.Location,
+                                               userDTO.Client.Adress.State,
+                                               client);
 
+                }
+
+                return Created("", _clientService.UpdateUser(client));
             }
-
-            return Created("", _clientService.UpdateUser(client));
-
+            catch (Exception ex)
+            {
+                return BadRequest("Error updating user : " + ex.Message);
+            }
         }
 
         [HttpPost, AllowAnonymous, Route("login")]

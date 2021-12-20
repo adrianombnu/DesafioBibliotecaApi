@@ -11,6 +11,8 @@ namespace DesafioBibliotecaApi.DTOs
         public override void Validar()
         {
             if (Client is null)
+                AddErros("Invalid client");
+            else
             {
                 Client.Validar();
 

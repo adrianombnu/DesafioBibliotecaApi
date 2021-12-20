@@ -21,6 +21,7 @@ namespace DesafioBibliotecaApi.DTOs
 
         public void AddErros(List<string> erros)
         {
+            Success = false;
             Errors.AddRange(erros);
         }
 

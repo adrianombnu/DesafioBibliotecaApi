@@ -25,10 +25,12 @@ namespace DesafioBibliotecaApi.Repositorio
 
         }
 
-        public Book GetByName(string name)
+        public Book CheckExistence(Guid idBook, string name, Guid idAuthor, bool newBook = false)
         {
-            return _store.Where(u => u.Value.Name == name).FirstOrDefault().Value;
-
+            if(newBook)
+                return _store.Where(u => u.Value.Name == name && u.Value.AuthorId == idAuthor).FirstOrDefault().Value;
+            else
+                return _store.Where(u => u.Value.Name == name && u.Value.AuthorId == idAuthor && u.Value.Id != idBook).FirstOrDefault().Value;
         }
 
 

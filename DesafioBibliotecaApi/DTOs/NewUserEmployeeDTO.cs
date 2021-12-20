@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace DesafioBibliotecaApi.DTOs
 {
@@ -11,13 +12,15 @@ namespace DesafioBibliotecaApi.DTOs
 
         public override void Validar()
         {
-            if (string.IsNullOrEmpty(Username) || Username.Length > 50)
+            Regex rgx = new Regex(@"[^a-zA-Z\s]");
+
+            if (string.IsNullOrEmpty(Username) || Username.Length > 50 )
                 AddErros("Invalid username");
            
-            if (string.IsNullOrEmpty(Password) || Password.Length > 50)
+            if (string.IsNullOrEmpty(Password) || Password.Length > 50 )
                 AddErros("Invalid password");
             
-            if (string.IsNullOrEmpty(Role) || Role.Length > 50)
+            if (string.IsNullOrEmpty(Role) || Role.Length > 50 || rgx.IsMatch(Role))
                 AddErros("Invalid role");
             
             if (Client is null)

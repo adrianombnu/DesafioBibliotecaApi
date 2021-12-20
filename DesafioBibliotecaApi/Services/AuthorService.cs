@@ -93,6 +93,11 @@ namespace DesafioBibliotecaApi.Services
             if (authorOld is null)
                 throw new Exception("Author not found!");
 
+            var authorExists = _authorRepository.GetByDocumentDiferentAuthor(author.Document, author.Id);
+
+            if (authorExists != null)
+                throw new Exception("The author is already registered, try another one!");
+
             _authorRepository.Update(author);
 
             return new AuthorDTO

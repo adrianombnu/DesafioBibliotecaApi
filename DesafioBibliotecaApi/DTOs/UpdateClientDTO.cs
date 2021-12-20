@@ -11,7 +11,7 @@ namespace DesafioBibliotecaApi.DTOs
         public int Age { get; set; }
         public string ZipCode { get; set; }
         public DateTime Birthdate { get; set; }
-        public AdressDTO? Adress { get; set; }
+        public NewAdressDTO? Adress { get; set; }
 
         public override void Validar()
         {
@@ -23,14 +23,14 @@ namespace DesafioBibliotecaApi.DTOs
             if (string.IsNullOrEmpty(Lastname) || Lastname.Length > 50 || rgx.IsMatch(Lastname))
                 AddErros("Invalid lastname");
 
-            if (string.IsNullOrEmpty(ZipCode) || ZipCode.Length > 50 || rgx.IsMatch(ZipCode))
-                AddErros("Invalid CEP");
-
             rgx = new Regex("[^0-9]");
             
             if (rgx.IsMatch(Document))
                 AddErros("Invalid document");
-            
+
+            if (string.IsNullOrEmpty(ZipCode) || ZipCode.Length > 50 || rgx.IsMatch(ZipCode))
+                AddErros("Invalid CEP");
+
             if (Age == 0)
                 AddErros("Invalid age");
 

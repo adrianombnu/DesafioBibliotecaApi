@@ -31,6 +31,12 @@ namespace DesafioBibliotecaApi.Repositorio
 
         }
 
+        public Author GetByDocumentDiferentAuthor(string document, Guid id)
+        {
+            return _store.Where(u => u.Value.Document == document && u.Value.Id != id).FirstOrDefault().Value;
+
+        }
+
     }
 
 }

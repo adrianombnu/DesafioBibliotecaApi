@@ -66,5 +66,11 @@ namespace DesafioBibliotecaApi.Services
             };
 
         }
+
+        public Guid FindIdClient(Guid idUser)
+        {
+            return _clientRepository.FindIdClient(idUser);
+
+        }
     }
 }

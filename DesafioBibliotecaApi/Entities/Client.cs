@@ -13,7 +13,31 @@ namespace DesafioBibliotecaApi.Entities
         public string ZipCode { get; set; }
         public DateTime Birthdate { get; set; }
         public Guid IdUser { get; set; }
-        public Adress Adress { get; set; } 
+        public Adress Adress { get; set; }
+
+        public Client(string name, string lastname, string document, int age, string zipCode, DateTime birthdate, Guid idUser)
+        {
+            Name = name;
+            Lastname = lastname;
+            Document = document;
+            Age = age;
+            ZipCode = zipCode;
+            Birthdate = birthdate;
+            IdUser = idUser;
+            Id = Guid.NewGuid();
+        }
+
+        public Client(string name, string lastname, string document, int age, string zipCode, DateTime birthdate, Guid idUser, Guid idClient)
+        {
+            Name = name;
+            Lastname = lastname;
+            Document = document;
+            Age = age;
+            ZipCode = zipCode;
+            Birthdate = birthdate;
+            IdUser = idUser;
+            Id = idClient;
+        }
 
         public void Update(Client client)
         {
@@ -39,13 +63,13 @@ namespace DesafioBibliotecaApi.Entities
             if (string.IsNullOrEmpty(Lastname) || Lastname.Length > 50 || rgx.IsMatch(Lastname))
                 throw new Exception("Invalid lastname.");
 
-            if (ZipCode is null || ZipCode.Length > 50 || rgx.IsMatch(ZipCode))
-                throw new Exception("Invalid zipcode.");
-
             rgx = new Regex("[^0-9]");
 
             if (rgx.IsMatch(Document))
                 throw new Exception("Invalid document.");
+
+            if (ZipCode is null || ZipCode.Length > 50 || rgx.IsMatch(ZipCode))
+                throw new Exception("Invalid zipcode.");
 
             if (Age == 0)
                 throw new Exception("Invalid age.");

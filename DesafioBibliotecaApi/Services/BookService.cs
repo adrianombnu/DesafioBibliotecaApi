@@ -25,7 +25,7 @@ namespace DesafioBibliotecaApi.Services
             if (author is null)
                 throw new ArgumentException("Author not found");
 
-            var bookExists = _bookRepository.GetByName(book.Name);
+            var bookExists = _bookRepository.CheckExistence(book.Id, book.Name, book.AuthorId, true);
 
             if (bookExists != null)
                 throw new Exception("The book is already registered, try another one!");
@@ -97,6 +97,11 @@ namespace DesafioBibliotecaApi.Services
 
             if (bookOld is null)
                 throw new Exception("Book not found!");
+
+            var bookExists = _bookRepository.CheckExistence(book.Id, book.Name, book.AuthorId);
+
+            if (bookExists != null)
+                throw new Exception("The book is already registered, try another one!");
 
             _bookRepository.Update(book);
 
