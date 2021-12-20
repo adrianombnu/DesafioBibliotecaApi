@@ -98,7 +98,7 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        [HttpPost, Authorize, Route("reservations/cancel{idReservation}]
+        [HttpPost, Authorize, Route("reservations/cancel{idReservation}")]
         //[HttpPost, Route("reservations/cancel/{idReservation}")]
         public IActionResult CancelReservation(Guid idReservation)
         {
