@@ -24,13 +24,14 @@ namespace DesafioBibliotecaApi.Services
             if (userExists != null)
                 throw new Exception("The username is already in use, try another one!");
 
-            var userCreated = _userRepository.Create(user);
+           if(!_userRepository.Create(user))
+                throw new Exception("User cannot be created!");
 
             return new UserDTO
             {
-                Role = userCreated.Role,
-                Username = userCreated.UserName,
-                Id = userCreated.Id
+                Role = user.Role,
+                Username = user.UserName,
+                Id = user.Id
 
             };
 

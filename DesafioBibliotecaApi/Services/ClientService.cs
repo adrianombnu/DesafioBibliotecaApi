@@ -1,6 +1,7 @@
 ﻿using DesafioBibliotecaApi.DTOs;
 using DesafioBibliotecaApi.Entities;
 using DesafioBibliotecaApi.Repositorio;
+using System;
 
 namespace DesafioBibliotecaApi.Services
 {
@@ -15,7 +16,8 @@ namespace DesafioBibliotecaApi.Services
 
         public ClientDTO Create(Client client)
         {
-            var userCreated = _clientRepository.Create(client);
+            if (!_clientRepository.Create(client))
+                throw new Exception("Client cannot be created!");
 
             return new ClientDTO
             {
@@ -40,7 +42,8 @@ namespace DesafioBibliotecaApi.Services
 
         public ClientDTO UpdateUser(Client client)
         {
-            var userCreated = _clientRepository.UpdateUser(client);
+            if (!_clientRepository.Update(client))
+                throw new Exception("Client cannot be updated!");
 
             return new ClientDTO
             {
@@ -56,7 +59,9 @@ namespace DesafioBibliotecaApi.Services
                 Document = client.Document,
                 Lastname = client.Lastname,
                 Name = client.Name,
-                ZipCode = client.ZipCode
+                ZipCode = client.ZipCode,
+                Id = client.Id,
+                Birthdate= client.Birthdate
 
             };
 

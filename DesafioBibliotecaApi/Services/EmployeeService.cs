@@ -26,32 +26,17 @@ namespace DesafioBibliotecaApi.Services
             if (userExists != null)
                 throw new Exception("The username is already in use, try another one!");
 
-            var userCreated = _userRepository.Create(user);
+            if (!_userRepository.Create(user))
+                throw new Exception("User cannot be created!");
 
             return new UserDTO
             {
-                Role = userCreated.Role,
-                Username = userCreated.UserName,
-                Id = userCreated.Id
+                Role = user.Role,
+                Username = user.UserName,
+                Id = user.Id
 
             };
 
-        }
-
-        public IEnumerable<UserResultDTO> Get()
-        {
-            var users = _userRepository.Get();
-
-            return users.Select(u =>
-            {
-                return new UserResultDTO
-                {
-                    Role = u.Role,
-                    Username = u.UserName,
-                    Id = u.Id
-
-                };
-            });
         }
 
         public IEnumerable<UserResultDTO> GetFilter(string? name = null, DateTime? birthdate = null, string? document = null, int page = 1, int itens = 50)

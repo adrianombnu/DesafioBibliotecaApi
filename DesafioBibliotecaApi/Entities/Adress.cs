@@ -1,9 +1,10 @@
 ﻿using DesafioBibliotecaApi.Entidades;
 using Newtonsoft.Json;
+using System;
 
 namespace DesafioBibliotecaApi.Entities
 {
-    public class Adress : Base
+    public class Adress : BaseEntity<Guid>
     {
         [JsonProperty("cep")]
         public string ZipCode { get; set; }

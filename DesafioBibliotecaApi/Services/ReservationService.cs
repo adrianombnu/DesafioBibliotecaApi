@@ -116,7 +116,8 @@ namespace DesafioBibliotecaApi.Services
             if (reservationOld is null)
                 throw new Exception("Reservation not found!");
 
-            _reservationRepository.Update(reservation);
+            if (!_reservationRepository.Update(reservation))
+                throw new Exception("Reservation cannot be update!");
 
             return new ReservationDTO
             {
@@ -179,7 +180,7 @@ namespace DesafioBibliotecaApi.Services
         {
             var reservation = _reservationRepository.Get(idReservation);
 
-            if (reservation.StatusReservation != EStatusReservation.Closed)
+            if (reservation.StatusReservation != EStatusReservation.InProgress)
                 throw new Exception("Reservation is already canceled or closed.");
 
             return _reservationRepository.FinalizeReservation(idReservation);

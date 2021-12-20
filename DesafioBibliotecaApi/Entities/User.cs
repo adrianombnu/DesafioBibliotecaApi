@@ -3,7 +3,7 @@ using System;
 
 namespace DesafioBibliotecaApi.Entidades
 {
-    public class User : Base
+    public class User : BaseEntity<Guid>
     {
         public static object Claims { get; internal set; }
         public string UserName { get; set; }

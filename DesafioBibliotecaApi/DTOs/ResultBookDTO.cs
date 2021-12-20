@@ -3,7 +3,7 @@ using System;
 
 namespace DesafioBibliotecaApi.DTOs
 {
-    public class ResultBookDTO : Base
+    public class ResultBookDTO : BaseEntity<Guid>
     {
         public string Name { get; set; }
         public string Description { get; set; }

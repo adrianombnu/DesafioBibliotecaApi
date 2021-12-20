@@ -1,6 +1,7 @@
 ﻿using DesafioBibliotecaApi.Entidades;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace DesafioBibliotecaApi.Entities
 {
@@ -21,6 +22,8 @@ namespace DesafioBibliotecaApi.Entities
             Age = age;
             Document = document;
             Id = Guid.NewGuid();
+
+            Valida();
             
         }
 
@@ -32,6 +35,39 @@ namespace DesafioBibliotecaApi.Entities
             Age = age;
             Document = document;
             Id = idAuthor;
+
+            Valida();
+
+        }
+
+        public void Valida()
+        {
+            //Regex rgx = new Regex("[^a-zA-Z]");
+            Regex rgx = new Regex("[^0-9]");
+            bool hasSpecialChars = rgx.IsMatch(Document);
+
+            if (Name is null || Name.Length > 150)
+            {
+                throw new Exception("Invalid name.");
+            }
+
+            if (Lastname is null || Lastname.Length > 150)
+            {
+                throw new Exception("Invalid lastname.");
+            }
+
+            if (Nacionality is null || Nacionality.Length > 150)
+            {
+                throw new Exception("Invalid nacionality.");
+            }
+
+            if(Age == 0)
+                throw new Exception("Invalid age.");
+
+            if (hasSpecialChars || Document is null || Document.Length > 150)
+            {
+                throw new Exception("Invalid document.");
+            }
 
         }
 

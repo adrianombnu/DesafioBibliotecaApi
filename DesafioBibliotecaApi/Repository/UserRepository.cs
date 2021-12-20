@@ -1,74 +1,30 @@
 ﻿using DesafioBibliotecaApi.Entidades;
+using DesafioBibliotecaApi.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace DesafioBibliotecaApi.Repositorio
 {
-    public class UserRepository
+    public class UserRepository : BaseRepository<Guid, User>
     {
-        private readonly Dictionary<Guid, User> _users;
-        public UserRepository()
-        {
-            _users ??= new Dictionary<Guid, User>();
-        }
-
         public IEnumerable<User> Get()
         {
-            return _users.Values;
+            return _store.Values;
 
         }
 
-        public User Get(Guid id)
-        {
-            if (_users.TryGetValue(id, out var user))
-                return user;
-
-            throw new Exception("User not found.");
-
-        }
-        
         public User GetByUsername(string username)
         {
-            return _users.Values.Where(u => u.UserName == username).FirstOrDefault();
+            return _store.Values.Where(u => u.UserName == username).FirstOrDefault();
 
-        }
-
-        public User Create(User user)
-        {
-            //user.Id = Guid.NewGuid();
-            if (_users.TryAdd(user.Id, user))
-                return user;
-
-            throw new Exception("Não foi possível criar usuário");
-        }
-
-
-        public bool Remove(Guid id)
-        {
-            return _users.Remove(id);
-
-        }
-
-        public User Update(Guid id, User user)
-        {
-            if (_users.TryGetValue(id, out var userToUpdate))
-            {
-                userToUpdate.Role = user.Role;
-                userToUpdate.UserName = user.UserName;
-                userToUpdate.Password = user.Password;
-
-                return Get(id);
-            }
-
-            throw new Exception("Usuário não encontrado.");
         }
 
         public LoginResult Login(string username, string password)
         {
             try
             {
-                var user = _users.Values.Where(u => u.UserName == username && u.Password == password).SingleOrDefault();
+                var user = _store.Values.Where(u => u.UserName == username && u.Password == password).SingleOrDefault();
 
                 if (user != null)
                 {
@@ -91,11 +47,11 @@ namespace DesafioBibliotecaApi.Repositorio
 
                 }
 
-                var userExistsForUsername = _users.Values.Where(u => u.UserName == username).Any();
+                var userExistsForUsername = _store.Values.Where(u => u.UserName == username).Any();
 
                 if (userExistsForUsername)
                 {
-                    user = _users.Values.Where(u => u.UserName == username).Single();
+                    user = _store.Values.Where(u => u.UserName == username).Single();
 
                     user.FailedAttemps++;
 

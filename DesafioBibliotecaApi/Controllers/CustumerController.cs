@@ -38,7 +38,8 @@ namespace DesafioBibliotecaApi.Controllers
             var user = new User
             {
                 UserName = userDTO.Username,
-                Password = userDTO.Password
+                Password = userDTO.Password,
+                Id = Guid.NewGuid()
             };
 
             var client = new Client
@@ -49,7 +50,8 @@ namespace DesafioBibliotecaApi.Controllers
                 Document = userDTO.Client.Document,
                 ZipCode = userDTO.Client.ZipCode,
                 IdUser = user.Id,
-                Birthdate = userDTO.Client.Birthdate
+                Birthdate = userDTO.Client.Birthdate,
+                Id = Guid.NewGuid()
 
             };
 
@@ -98,7 +100,8 @@ namespace DesafioBibliotecaApi.Controllers
                 Document = userDTO.Client.Document,
                 ZipCode = userDTO.Client.ZipCode,
                 IdUser = userDTO.Id,
-                Birthdate = userDTO.Client.Birthdate
+                Birthdate = userDTO.Client.Birthdate,
+                Id = userDTO.Id
 
             };
 
@@ -138,7 +141,19 @@ namespace DesafioBibliotecaApi.Controllers
         [HttpPut, Authorize, Route("reset_password")]
         public IActionResult Login([FromBody] UpdateLoginDTO loginDTO)
         {
-            return Ok(_loginService.UpdateLogin(loginDTO.Username, loginDTO.PastPassword, loginDTO.NewPassword, loginDTO.ConfirmNewPassword));
+            var userName = string.Empty;
+
+            try
+            {
+                userName = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("User not authenticated");
+            }
+
+            return Ok(_loginService.UpdateLogin(userName, loginDTO.PastPassword, loginDTO.NewPassword, loginDTO.ConfirmNewPassword));
 
         }
 

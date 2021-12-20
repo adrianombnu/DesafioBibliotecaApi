@@ -3,7 +3,7 @@ using System;
 
 namespace DesafioBibliotecaApi.Entities
 {
-    public class Client : Base
+    public class Client : BaseEntity<Guid>
     {
         public string Name { get; set; }
         public string Lastname { get; set; } 
