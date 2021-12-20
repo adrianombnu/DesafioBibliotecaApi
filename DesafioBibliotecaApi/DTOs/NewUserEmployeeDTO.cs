@@ -11,31 +11,23 @@ namespace DesafioBibliotecaApi.DTOs
 
         public override void Validar()
         {
-            Success = true;
-            Errors = new List<string>();
-
-            if (Username is null || Username.Length > 50)
-            {
-                Success = false;
-                Errors.Add("Invalid username");
-            }
-
-            if (Password is null || Password.Length > 50)
-            {
-                Success = false;
-                Errors.Add("Invalid password");
-            }
-
-            if (Role is null || Role.Length > 50)
-            {
-                Success = false;
-                Errors.Add("Invalid role");
-            }
-
+            if (string.IsNullOrEmpty(Username) || Username.Length > 50)
+                AddErros("Invalid username");
+           
+            if (string.IsNullOrEmpty(Password) || Password.Length > 50)
+                AddErros("Invalid password");
+            
+            if (string.IsNullOrEmpty(Role) || Role.Length > 50)
+                AddErros("Invalid role");
+            
             if (Client is null)
+                AddErros("Invalid client");
+            else
             {
-                Success = false;
-                Errors.Add("Invalid client");
+                Client.Validar();
+
+                if (Client.Success == false)
+                    AddErros(Client.Errors);
             }
 
         }

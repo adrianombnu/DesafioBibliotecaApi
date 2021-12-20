@@ -1,6 +1,7 @@
 ﻿using DesafioBibliotecaApi.Entities;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace DesafioBibliotecaApi.DTOs 
 {
@@ -14,38 +15,23 @@ namespace DesafioBibliotecaApi.DTOs
 
         public override void Validar()
         {
-            Success = true;
-            Errors = new List<string>();
+            Regex rgx = new Regex(@"[^a-zA-Z\s]");
 
-            if (Name is null || Name.Length > 150)
-            {
-                Success = false;
-                Errors.Add("Invalid name");
-            }
-
-            if (Description is null || Description.Length > 150)
-            {
-                Success = false;
-                Errors.Add("Invalid description");
-            }
-
+            if (string.IsNullOrEmpty(Name) || Name.Length > 150 || rgx.IsMatch(Name))
+                AddErros("Invalid name");
+            
+            if (string.IsNullOrEmpty(Description) || Description.Length > 150 || rgx.IsMatch(Description))
+                AddErros("Invalid description");
+            
             if (AuthorId.ToString().Length < 0)
-            {
-                Success = false;
-                Errors.Add("Author not informed");
-            }
-
+                AddErros("Author not informed");
+            
             if (ReleaseYear <= 0)
-            {
-                Success = false;
-                Errors.Add("Release year invalid");
-            }
-
+                AddErros("Release year invalid");
+            
             if (QuantityInventory <= 0)
-            {
-                Success = false;
-                Errors.Add("Quantity Inventory invalid");
-            }
+                AddErros("Quantity Inventory invalid");
+            
         }
 
     }

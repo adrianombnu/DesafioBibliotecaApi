@@ -10,10 +10,13 @@ namespace DesafioBibliotecaApi.DTOs
 
         public override void Validar()
         {
-            Success = true;
+            if (Client is null)
+            {
+                Client.Validar();
 
-            if (Client is null )
-                Success = false;
+                if (Client.Success == false)
+                    AddErros(Client.Errors);
+            }
 
         }
 

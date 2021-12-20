@@ -14,19 +14,17 @@ namespace DesafioBibliotecaApi.DTOs
 
         public override void Validar()
         {
-            Success = true;
-
             if (string.IsNullOrEmpty(Id.ToString()))
-                Success = false;
+                AddErros("Invalid reservation");
 
             if (string.IsNullOrEmpty(StartDate.ToString()))
-                Success = false;
+                AddErros("Invalid start date");
 
             if (string.IsNullOrEmpty(EndDate.ToString()))
-                Success = false;
+                AddErros("Invalid end date");
 
             if (idBooks is null)
-                Success = false;
+                AddErros("Invalid books");
 
         }
     }

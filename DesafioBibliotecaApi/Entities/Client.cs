@@ -1,5 +1,6 @@
 ﻿using DesafioBibliotecaApi.Entidades;
 using System;
+using System.Text.RegularExpressions;
 
 namespace DesafioBibliotecaApi.Entities
 {
@@ -23,6 +24,32 @@ namespace DesafioBibliotecaApi.Entities
             ZipCode = client.ZipCode;   
             Adress = client.Adress;
             Birthdate = client.Birthdate;
+
+            Valida();
+
         }
+
+        public void Valida()
+        {
+            Regex rgx = new Regex(@"[^a-zA-Z\s]");
+
+            if (string.IsNullOrEmpty(Name) || Name.Length > 50 || rgx.IsMatch(Name))
+                throw new Exception("Invalid name.");
+
+            if (string.IsNullOrEmpty(Lastname) || Lastname.Length > 50 || rgx.IsMatch(Lastname))
+                throw new Exception("Invalid lastname.");
+
+            if (ZipCode is null || ZipCode.Length > 50 || rgx.IsMatch(ZipCode))
+                throw new Exception("Invalid zipcode.");
+
+            rgx = new Regex("[^0-9]");
+
+            if (rgx.IsMatch(Document))
+                throw new Exception("Invalid document.");
+
+            if (Age == 0)
+                throw new Exception("Invalid age.");
+
+        } 
     }
 }

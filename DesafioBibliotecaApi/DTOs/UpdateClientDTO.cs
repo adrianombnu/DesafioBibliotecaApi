@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 
 namespace DesafioBibliotecaApi.DTOs
 {
-    public class UpdateClientDTO
+    public class UpdateClientDTO : Validator
     {
         public string Name { get; set; }
         public string Lastname { get; set; }
@@ -12,5 +13,35 @@ namespace DesafioBibliotecaApi.DTOs
         public DateTime Birthdate { get; set; }
         public AdressDTO? Adress { get; set; }
 
+        public override void Validar()
+        {
+            Regex rgx = new Regex(@"[^a-zA-Z\s]");
+
+            if (string.IsNullOrEmpty(Name) || Name.Length > 50 || rgx.IsMatch(Name))
+                AddErros("Invalid name");
+            
+            if (string.IsNullOrEmpty(Lastname) || Lastname.Length > 50 || rgx.IsMatch(Lastname))
+                AddErros("Invalid lastname");
+
+            if (string.IsNullOrEmpty(ZipCode) || ZipCode.Length > 50 || rgx.IsMatch(ZipCode))
+                AddErros("Invalid CEP");
+
+            rgx = new Regex("[^0-9]");
+            
+            if (rgx.IsMatch(Document))
+                AddErros("Invalid document");
+            
+            if (Age == 0)
+                AddErros("Invalid age");
+
+            if (Adress is not null)
+            {
+                Adress.Validar();
+
+                if (Adress.Success == false)
+                    AddErros(Adress.Errors);
+            }
+
+        }
     }
 }

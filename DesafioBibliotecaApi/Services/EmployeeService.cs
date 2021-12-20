@@ -89,9 +89,9 @@ namespace DesafioBibliotecaApi.Services
 
         }
 
-        public ClientDTO Get(Guid id)
+        public ClientDTO Get(Guid idUser)
         {
-            var user = _userRepository.Get(id);
+            var user = _userRepository.Get(idUser);
             var client = _clientRepository.GetIdUser(user.Id);
 
             return new ClientDTO
@@ -108,7 +108,9 @@ namespace DesafioBibliotecaApi.Services
                 Document = client.Document,
                 Lastname = client.Lastname,
                 Name = client.Name,
-                ZipCode = client.ZipCode
+                ZipCode = client.ZipCode,
+                Birthdate = client.Birthdate,
+                Id = client.Id
 
             };
 

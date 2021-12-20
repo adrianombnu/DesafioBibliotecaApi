@@ -31,7 +31,7 @@ namespace DesafioBibliotecaApi.Controllers
         public async Task<IActionResult> Cadastrar(NewUserDTO userDTO)
         {
             userDTO.Validar();
-
+            
             if (!userDTO.Success)
                 return BadRequest(userDTO.Errors);
 

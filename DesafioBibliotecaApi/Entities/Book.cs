@@ -49,12 +49,14 @@ namespace DesafioBibliotecaApi.Entities
 
         public void Valida()
         {
-            if (Name is null || Name.Length > 150)
+            Regex rgx = new Regex(@"[^a-zA-Z\s]");
+
+            if (string.IsNullOrEmpty(Name) || Name.Length > 150 || rgx.IsMatch(Name))
             {
                 throw new Exception("Invalid name.");
             }
 
-            if (Description is null || Description.Length > 150)
+            if (string.IsNullOrEmpty(Description) || Description.Length > 150 || rgx.IsMatch(Description))
             {
                 throw new Exception("Invalid lastname.");
             }

@@ -171,10 +171,23 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        [HttpGet, Authorize(Roles = "admin, funcionario"), Route("users/{id}")]
-        public IActionResult Get(Guid id)
+        //[HttpGet, Authorize(Roles = "admin, funcionario"), Route("users/{id}")]
+        [HttpGet, Route("user_logged")]
+        public IActionResult Get()
         {
-            return Ok(_employeeService.Get(id));
+            var userId = string.Empty;
+
+            try
+            {
+                userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("User not authenticated");
+            }
+
+            return Ok(_employeeService.Get(Guid.Parse(userId)));
 
         }
 

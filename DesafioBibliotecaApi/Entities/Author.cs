@@ -42,21 +42,19 @@ namespace DesafioBibliotecaApi.Entities
 
         public void Valida()
         {
-            //Regex rgx = new Regex("[^a-zA-Z]");
-            Regex rgx = new Regex("[^0-9]");
-            bool hasSpecialChars = rgx.IsMatch(Document);
-
-            if (Name is null || Name.Length > 150)
+            Regex rgx = new Regex(@"[^a-zA-Z\s]");
+            
+            if (string.IsNullOrEmpty(Name) || Name.Length > 150 || rgx.IsMatch(Name))
             {
                 throw new Exception("Invalid name.");
             }
 
-            if (Lastname is null || Lastname.Length > 150)
+            if (string.IsNullOrEmpty(Lastname) || Lastname.Length > 150 || rgx.IsMatch(Lastname))
             {
                 throw new Exception("Invalid lastname.");
             }
 
-            if (Nacionality is null || Nacionality.Length > 150)
+            if (string.IsNullOrEmpty(Nacionality) || Nacionality.Length > 150 || rgx.IsMatch(Nacionality))
             {
                 throw new Exception("Invalid nacionality.");
             }
@@ -64,7 +62,9 @@ namespace DesafioBibliotecaApi.Entities
             if(Age == 0)
                 throw new Exception("Invalid age.");
 
-            if (hasSpecialChars || Document is null || Document.Length > 150)
+            rgx = new Regex("[^0-9]");
+            
+            if (string.IsNullOrEmpty(Document) || Document.Length > 150 || rgx.IsMatch(Document))
             {
                 throw new Exception("Invalid document.");
             }

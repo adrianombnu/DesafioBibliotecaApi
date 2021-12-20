@@ -13,50 +13,25 @@ namespace DesafioBibliotecaApi.DTOs
 
         public override void Validar()
         {
-            Success = true;
-            Errors = new List<string>();
+            Regex rgx = new Regex(@"[^a-zA-Z\s]");
 
-            if (Name is null || Name.Length > 150)
-            {
-                Success = false;
-                Errors.Add("Invalid name");
+            if (string.IsNullOrEmpty(Name) || Name.Length > 150 || rgx.IsMatch(Name))
+                AddErros("Invalid name");
 
-            }
+            if (string.IsNullOrEmpty(Lastname) || Lastname.Length > 150 || rgx.IsMatch(Lastname))
+                AddErros("Invalid lastname");
 
-            if (Lastname is null || Lastname.Length > 150)
-            {
-                Success = false;
-                Errors.Add("Invalid lastname");
-            }
+            if (string.IsNullOrEmpty(Nacionality) || Nacionality.Length > 150 || rgx.IsMatch(Nacionality))
+                AddErros("Invalid nacionality");
 
-            if (Nacionality is null || Nacionality.Length > 150)
-            {
-                Success = false;
-                Errors.Add("Invalid nacionality");
-            }
+            rgx = new Regex("[^0-9]");
 
-
-            if (Document is null || Document.Length > 11)
-            {
-                Success = false;
-                Errors.Add("Invalid document");
-            }
-            else
-            {
-                Regex rgx = new Regex("[^0-9]");
-                bool hasSpecialChars = rgx.IsMatch(Document);
-                if (hasSpecialChars)
-                {
-                    Success = false;
-                    Errors.Add("Invalid document");
-                }
-            }
+            if (string.IsNullOrEmpty(Document) || Document.Length > 11 || rgx.IsMatch(Document))
+                AddErros("Invalid document");
 
             if (Age == 0)
-            {
-                Success = false;
-                Errors.Add("Invalid age");
-            }
+                AddErros("Invalid age");
+
 
         }
 

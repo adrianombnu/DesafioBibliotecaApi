@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace DesafioBibliotecaApi.DTOs
@@ -15,29 +16,32 @@ namespace DesafioBibliotecaApi.DTOs
 
         public override void Validar()
         {
-            if (Name is null || Name.Length > 50)
-            {
-                Success = false;
-                Errors.Add("Invalid name");
-            }
+            Regex rgx = new Regex(@"[^a-zA-Z\s]");
 
-            if (Lastname is null || Lastname.Length > 50)
-            {
-                Success = false;
-                Errors.Add("Invalid name");
-            }
+            if (string.IsNullOrEmpty(Name) || Name.Length > 50 || rgx.IsMatch(Name))
+                AddErros("Invalid name");
+
+            if (string.IsNullOrEmpty(Lastname) || Lastname.Length > 50 || rgx.IsMatch(Lastname))
+                AddErros("Invalid name");
+
+            if (string.IsNullOrEmpty(ZipCode) || ZipCode.Length > 50 || rgx.IsMatch(ZipCode))
+                AddErros("Invalid CEP");
+
+            rgx = new Regex("[^0-9]");
+            
+            if (rgx.IsMatch(Document))
+                AddErros("Invalid document");
 
             if (Age == 0)
-            {
-                Success = false;
-                Errors.Add("Invalid age");
+                AddErros("Invalid age");
 
-            }
-
-            if (ZipCode is null || Name.Length > 50)
+            if (Adress is not null)
             {
-                Success = false;
-                Errors.Add("Invalid CEP");
+                Adress.Validar();
+
+                if (Adress.Success == false)
+                    AddErros(Adress.Errors);
+
             }
 
         }
