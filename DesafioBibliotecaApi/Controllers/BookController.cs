@@ -19,8 +19,8 @@ namespace DesafioBibliotecaApi.Controllers
             _bookService = bookService;
         }
 
-        //[HttpPost, Authorize(Roles = "admin, functionary"), Route("books")]
-        [HttpPost, Route("books")]
+        [HttpPost, Authorize(Roles = "admin, functionary"), Route("books")]
+        //[HttpPost, Route("books")]
         public IActionResult Create([FromBody] NewBookDTO bookDTO)
         {
             bookDTO.Validar();
@@ -42,15 +42,15 @@ namespace DesafioBibliotecaApi.Controllers
                         
         }
 
-        //[HttpGet, Authorize, Route("books")]
-        [HttpGet, Route("books")]
+        [HttpGet, Authorize, Route("books")]
+        //[HttpGet, Route("books")]
         public IActionResult Get([FromQuery] string? name,
                                  [FromQuery] int? releaseYear,
                                  [FromQuery] string? description,
                                  [FromQuery] int page = 1,
                                  [FromQuery] int itens = 50)
         {
-            /*try
+            try
             {
                 var userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
 
@@ -58,17 +58,17 @@ namespace DesafioBibliotecaApi.Controllers
             catch (Exception ex)
             {
                 return BadRequest("User not authenticated");
-            }*/
+            }
 
             return Ok(_bookService.GetFilter(name, releaseYear, description, page, itens));
                         
         }
 
-        //[HttpGet, Authorize, Route("books/{id}")]
-        [HttpGet, Route("books/{id}")]
+        [HttpGet, Authorize, Route("books/{id}")]
+        //[HttpGet, Route("books/{id}")]
         public IActionResult Get(Guid id)
         {
-            /*try
+            try
             {
                 var userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
 
@@ -77,13 +77,13 @@ namespace DesafioBibliotecaApi.Controllers
             {
                 return BadRequest("User not authenticated");
             }
-            */
+            
             return Ok(_bookService.Get(id));
 
         }
 
-        //[HttpDelete, Authorize(Roles = "admin, functionary"), Route("{id}/books")]
-        [HttpDelete, Route("{id}/books")]
+        [HttpDelete, Authorize(Roles = "admin, functionary"), Route("{id}/books")]
+        //[HttpDelete, Route("{id}/books")]
         public IActionResult Delete(Guid id)
         {
             if (!_bookService.Delete(id))
@@ -93,8 +93,8 @@ namespace DesafioBibliotecaApi.Controllers
         }
 
 
-        //[HttpPut, Authorize(Roles = "admin, functionary"), Route("{id}/books")]
-        [HttpPut,  Route("{id}/books")]
+        [HttpPut, Authorize(Roles = "admin, functionary"), Route("{id}/books")]
+        //[HttpPut,  Route("{id}/books")]
         public IActionResult UpdateBook(Guid id, [FromBody] NewBookDTO bookDTO)
         {
             bookDTO.Validar();

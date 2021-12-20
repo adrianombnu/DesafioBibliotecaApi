@@ -1,6 +1,7 @@
 ﻿using DesafioBibliotecaApi.DTOs;
 using DesafioBibliotecaApi.Entities;
 using DesafioBibliotecaApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
@@ -18,8 +19,8 @@ namespace DesafioBibliotecaApi.Controllers
             _withdrawService = withdrawService;
         }
 
-        //[HttpPost, Authorize, Route("withdraw")]
-        [HttpPost, Route("withdraw")]
+        [HttpPost, Authorize, Route("withdraw")]
+        //[HttpPost, Route("withdraw")]
         public IActionResult Create([FromBody] NewWithdrawDTO withdrawDTO)
         {
             withdrawDTO.Validar();
@@ -41,16 +42,16 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        //[HttpPost, Authorize, Route("withdraw/finalize/{idWithdraw}")]
-        [HttpPost, Route("withdraw/finalize/{idWithdraw}")]
+        [HttpPost, Authorize, Route("withdraw/finalize/{idWithdraw}")]
+        //[HttpPost, Route("withdraw/finalize/{idWithdraw}")]
         public IActionResult FinalizeWithdraw(Guid idWithdraw)
         {
             return Created("", _withdrawService.FinalizeWithdraw(idWithdraw));
 
         }
 
-        //[HttpGet, Authorize, Route("withdraw")]
-        [HttpGet, Route("withdraw")]
+        [HttpGet, Authorize, Route("withdraw")]
+        //[HttpGet, Route("withdraw")]
         public IActionResult Get([FromQuery] DateTime? startDate,
                                  [FromQuery] DateTime? endDate,
                                  [FromQuery] string? author,
@@ -62,8 +63,8 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        //[HttpGet, Authorize, Route("{inprogress")]
-        [HttpGet, Route("withdraw/inprogress")]
+        [HttpGet, Authorize, Route("withdraw/inprogress")]
+        //[HttpGet, Route("withdraw/inprogress")]
         public IActionResult Get()
         {
             var userId = string.Empty;

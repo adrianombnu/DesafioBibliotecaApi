@@ -1,6 +1,7 @@
 ﻿using DesafioBibliotecaApi.DTOs;
 using DesafioBibliotecaApi.Entities;
 using DesafioBibliotecaApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
@@ -18,8 +19,8 @@ namespace DesafioBibliotecaApi.Controllers
             _reservationService = reservationService;
         }
 
-        //[HttpPost, Authorize, Route("reservations")]
-        [HttpPost, Route("reservations")]
+        [HttpPost, Authorize, Route("reservations")]
+        //[HttpPost, Route("reservations")]
         public IActionResult Create([FromBody] NewReservationDTO reservationDTO)
         {
             reservationDTO.Validar();
@@ -41,8 +42,8 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        //[HttpPut, Authorize, Route("reservations")]
-        [HttpPut, Route("reservations")]
+        [HttpPut, Authorize, Route("reservations")]
+        //[HttpPut, Route("reservations")]
         public IActionResult Update(Guid id, [FromBody] UpdateReservationDTO reservationDTO)
         {
             reservationDTO.Validar();
@@ -64,8 +65,8 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        //[HttpGet, Authorize, Route("reservations")]
-        [HttpGet, Route("reservations")]
+        [HttpGet, Authorize, Route("reservations")]
+        //[HttpGet, Route("reservations")]
         public IActionResult Get([FromQuery] DateTime? startDate,
                                  [FromQuery] DateTime? endDate,
                                  [FromQuery] string? author,
@@ -77,8 +78,8 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        //[HttpGet, Authorize, Route("reservations")]
-        [HttpGet, Route("reservations/customer")]
+        [HttpGet, Authorize, Route("reservations/customer")]
+        //[HttpGet, Route("reservations/customer")]
         public IActionResult Get()
         {
             var userId = string.Empty;
@@ -97,16 +98,16 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        //[HttpPost, Authorize, Route("reservations/cancel{idReservation}]
-        [HttpPost, Route("reservations/cancel/{idReservation}")]
+        [HttpPost, Authorize, Route("reservations/cancel{idReservation}]
+        //[HttpPost, Route("reservations/cancel/{idReservation}")]
         public IActionResult CancelReservation(Guid idReservation)
         {
             return Ok(_reservationService.CancelReservation(idReservation));
 
         }
 
-        //[HttpPost, Authorize, Route("/reservations/finalize{idReservation}")]
-        [HttpPost, Route("/reservations/finalize/{idReservation}")]
+        [HttpPost, Authorize, Route("/reservations/finalize{idReservation}")]
+        //[HttpPost, Route("/reservations/finalize/{idReservation}")]
         public IActionResult FinalizeReservation(Guid idReservation)
         {
             return Ok(_reservationService.FinalizeReservation(idReservation));

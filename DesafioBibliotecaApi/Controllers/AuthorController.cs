@@ -19,8 +19,8 @@ namespace DesafioBibliotecaApi.Controllers
             _authorService = authorService;
         }
 
-        //[HttpPost, Authorize(Roles = "admin, functionary"), Route("authors")]
-        [HttpPost, Route("authors")]
+        [HttpPost, Authorize(Roles = "admin, functionary"), Route("authors")]
+        //[HttpPost, Route("authors")]
         public IActionResult Create([FromBody] NewAuthorDTO authorDTO)
         {
             authorDTO.Validar();
@@ -43,29 +43,29 @@ namespace DesafioBibliotecaApi.Controllers
         }
 
 
-        //[HttpGet, Authorize, Route("authors")]
-        [HttpGet, Route("authors")]
+        [HttpGet, Authorize, Route("authors")]
+        //[HttpGet, Route("authors")]
         public IActionResult Get([FromQuery] string? name, [FromQuery] string? nationality, [FromQuery] int? age, [FromQuery] int page = 1, [FromQuery] int itens = 50)
         {
-            //try
-           // {
-             //   var userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
+            try
+            {
+                var userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
 
-            //}
-            //catch (Exception ex)
-            //{
-             //   return BadRequest("User not authenticated");
-            //}
+            }
+            catch (Exception ex)
+            {
+               return BadRequest("User not authenticated");
+            }
 
             return Ok(_authorService.GetFilter(name, nationality, age, page, itens));
             
         }
 
-        //[HttpGet, Authorize, Route("{id}/authors")]
-        [HttpGet, Route("{id}/authors")]
+        [HttpGet, Authorize, Route("{id}/authors")]
+        //[HttpGet, Route("{id}/authors")]
         public IActionResult Get(Guid id)
         {
-            /*try
+            try
             {
                 var userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
 
@@ -73,15 +73,14 @@ namespace DesafioBibliotecaApi.Controllers
             catch (Exception ex)
             {
                 return BadRequest("User not authenticated");
-            }
-            */
+            }            
 
             return Ok(_authorService.Get(id));
 
         }
 
-        //[HttpDelete, Authorize(Roles = "admin, functionary"), Route("{id}/authors")]
-        [HttpDelete, Route("{id}/authors")]
+        [HttpDelete, Authorize(Roles = "admin, functionary"), Route("{id}/authors")]
+        //[HttpDelete, Route("{id}/authors")]
         public IActionResult Delete(Guid id)
         {
             if (!_authorService.Delete(id))
@@ -90,8 +89,8 @@ namespace DesafioBibliotecaApi.Controllers
             return Ok("Author deleted with success.");
         }
 
-        //[HttpPut, Authorize(Roles = "admin, functionary"), Route("authors")]
-        [HttpPut, Route("authors")]
+        [HttpPut, Authorize(Roles = "admin, functionary"), Route("authors")]
+        //[HttpPut, Route("authors")]
         public IActionResult UpdateAuthor(Guid id, NewAuthorDTO authorDTO)
         {
             authorDTO.Validar();

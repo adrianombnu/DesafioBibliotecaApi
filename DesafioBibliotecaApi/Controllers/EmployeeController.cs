@@ -76,8 +76,8 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        //[HttpPut, Authorize, Route("users")]
-        [HttpPut, Route("users")]
+        [HttpPut, Authorize, Route("users")]
+        //[HttpPut, Route("users")]
         public async Task<IActionResult> UpdateUser(UpdateUserDTO userDTO)
         {
             userDTO.Validar();
@@ -166,8 +166,8 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        //[HttpGet, Authorize, Route("users")]
-        [HttpGet, Route("users")]
+        [HttpGet, Authorize, Route("users")]
+        //[HttpGet, Route("users")]
         public IActionResult Get([FromQuery] string? name = null,
                                  [FromQuery] DateTime? birthdate = null,
                                  [FromQuery] string? document = null,
@@ -179,8 +179,8 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        //[HttpGet, Authorize(Roles = "admin, funcionario"), Route("users/{id}")]
-        [HttpGet, Route("user_logged")]
+        [HttpGet, Authorize(Roles = "admin, funcionario"), Route("user_logged")]
+        //[HttpGet, Route("user_logged")]
         public IActionResult Get()
         {
             var userId = string.Empty;
