@@ -31,7 +31,7 @@ namespace DesafioBibliotecaApi.DTOs
             if (string.IsNullOrEmpty(ZipCode) || ZipCode.Length > 50 || rgx.IsMatch(ZipCode))
                 AddErros("Invalid CEP");
 
-            if (Age == 0)
+            if (Age <= 0)
                 AddErros("Invalid age");
 
             if (Adress is not null)

@@ -71,7 +71,7 @@ namespace DesafioBibliotecaApi.Entities
             if (ZipCode is null || ZipCode.Length > 50 || rgx.IsMatch(ZipCode))
                 throw new Exception("Invalid zipcode.");
 
-            if (Age == 0)
+            if (Age <= 0)
                 throw new Exception("Invalid age.");
 
         } 

@@ -29,7 +29,7 @@ namespace DesafioBibliotecaApi.DTOs
             if (string.IsNullOrEmpty(Document) || Document.Length > 11 || rgx.IsMatch(Document))
                 AddErros("Invalid document");
 
-            if (Age == 0)
+            if (Age <= 0)
                 AddErros("Invalid age");
 
 

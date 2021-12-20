@@ -59,7 +59,7 @@ namespace DesafioBibliotecaApi.Entities
                 throw new Exception("Invalid nacionality.");
             }
 
-            if(Age == 0)
+            if(Age <= 0)
                 throw new Exception("Invalid age.");
 
             rgx = new Regex("[^0-9]");

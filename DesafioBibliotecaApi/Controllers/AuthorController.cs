@@ -42,7 +42,6 @@ namespace DesafioBibliotecaApi.Controllers
                         
         }
 
-
         [HttpGet, Authorize, Route("authors")]
         //[HttpGet, Route("authors")]
         public IActionResult Get([FromQuery] string? name, [FromQuery] string? nationality, [FromQuery] int? age, [FromQuery] int page = 1, [FromQuery] int itens = 50)
