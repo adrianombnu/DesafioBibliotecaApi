@@ -17,26 +17,18 @@ namespace DesafioBibliotecaApi.Services
             _authorRepository = repository;
         }
 
-        public AuthorDTO Create(Author author)
+        public ResultDTO Create(Author author)
         {
             var authorExists = _authorRepository.GetByDocument(author.Document);
 
             if (authorExists != null)
-                throw new Exception("The author is already registered, try another one!");
+                return ResultDTO.ErroResult("The author is already registered, try another one!");
 
             if (!_authorRepository.Create(author))
-                throw new Exception("The author cannot be created!");
+                return ResultDTO.ErroResult("The author cannot be created!");
 
-            return new AuthorDTO
-            {
-                Name = author.Name,
-                Lastname = author.Lastname,
-                Nacionality = author.Nacionality,
-                Age = author.Age,
-                Id = author.Id,
-                Document = author.Document
-            };
-
+            return ResultDTO.SuccessResult(author);
+            
         }
 
         public IEnumerable<AuthorDTO> GetFilter(string? name = null, string? nationality = null, int? age = null, int page = 1, int itens = 50)
@@ -58,57 +50,46 @@ namespace DesafioBibliotecaApi.Services
 
         }
 
-        public AuthorDTO Get(Guid id)
+        public ResultDTO Get(Guid id)
         {
             var author = _authorRepository.Get(id);
 
             if (author is null)
-                throw new Exception("Author not found!");
+                return ResultDTO.ErroResult("Author not found!");
 
-            return new AuthorDTO
-            {
-                Name = author.Name,
-                Lastname = author.Lastname,
-                Nacionality = author.Nacionality,
-                Age = author.Age,
-                Id = author.Id,
-                Document = author.Document
-            };
+            return ResultDTO.SuccessResult(author);
+
         }
 
-        public bool Delete(Guid id)
+        public ResultDTO Delete(Guid id)
         {
             var author = _authorRepository.Get(id);
 
             if (author is null)
-                throw new Exception("Author not found!");
+                return ResultDTO.ErroResult("Author not found");
 
-            return _authorRepository.Delete(author);
+            if(_authorRepository.Delete(author))
+                return ResultDTO.SuccessResult();
+            else
+                return ResultDTO.ErroResult("Error deleting author");
 
         }
-        public AuthorDTO UpdateAuthor(Author author)
+        public ResultDTO UpdateAuthor(Author author)
         {
             var authorOld = _authorRepository.Get(author.Id);
 
             if (authorOld is null)
-                throw new Exception("Author not found!");
+                return ResultDTO.ErroResult("Author not found!");
 
             var authorExists = _authorRepository.GetByDocumentDiferentAuthor(author.Document, author.Id);
 
             if (authorExists != null)
-                throw new Exception("The author is already registered, try another one!");
+                return ResultDTO.ErroResult("The author is already registered, try another one!");
 
-            _authorRepository.Update(author);
+            if (!_authorRepository.Update(author))
+                return ResultDTO.ErroResult("The author cannot be updated!");
 
-            return new AuthorDTO
-            {
-                Name = author.Name,
-                Lastname = author.Lastname,
-                Nacionality = author.Nacionality,
-                Age = author.Age,
-                Id = author.Id,
-                Document = author.Document
-            };
+            return ResultDTO.SuccessResult(author);
 
         }
 

@@ -35,7 +35,7 @@ namespace DesafioBibliotecaApi.Services
 
         }
 
-        public WithdrawDTO Create(Withdraw withdraw)
+        public WithDrawResultDTO Create(Withdraw withdraw)
         {
             var minimumReserveLimit = _configuration.GetValue<int>("MinimumReserveLimit");
 
@@ -44,76 +44,130 @@ namespace DesafioBibliotecaApi.Services
                 var reservation = _reservationRepository.Get(withdraw.IdReservation.Value);
 
                 if (reservation.StatusReservation != EStatusReservation.InProgress)
-                    throw new Exception("Reservation already closed or canceled.");
-
+                    return new WithDrawResultDTO
+                    {
+                        Success = false,
+                        Errors = new string[] { $"Reservation already closed or canceled." }
+                    };
+                
                 if (reservation.EndDate.Date < DateTime.Now.Date)
-                    throw new Exception("Reservation expired, please close it.");
+                    return new WithDrawResultDTO
+                    {
+                        Success = false,
+                        Errors = new string[] { $"Reservation expired, please close it." }
+                    }; 
 
                 FinalizeReservation(reservation.Id);
 
                 var newWithdraw = new Withdraw(DateTime.Now, reservation.EndDate, reservation.IdBooks, reservation.IdClient, reservation.Id);
 
                 if (!_withdrawRepository.Create(newWithdraw))
-                    throw new Exception("Withdraw cannot be created!");
+                    return new WithDrawResultDTO
+                    {
+                        Success = false,
+                        Errors = new string[] { $"Withdraw cannot be created" }
+                    }; 
 
-                return new WithdrawDTO
+                return new WithDrawResultDTO
                 {
-                    EndDate = newWithdraw.EndDate,
-                    StartDate = newWithdraw.StartDate,
-                    IdClient = newWithdraw.IdClient,
-                    IdBooks = newWithdraw.IdBooks,
-                    Id = newWithdraw.Id,
-                    StatusWithdraw = newWithdraw.StatusWithdraw,
-                    IdReservation = newWithdraw.IdReservation,
+                    Success = true,
+                    Details = new DetailsWithdrawResultDTO
+                    {
+                        EndDate = newWithdraw.EndDate,
+                        StartDate = newWithdraw.StartDate,
+                        IdClient = newWithdraw.IdClient,
+                        IdBooks = newWithdraw.IdBooks,
+                        Id = newWithdraw.Id,
+                        StatusWithdraw = newWithdraw.StatusWithdraw,
+                        IdReservation = newWithdraw.IdReservation,
 
+                    }
                 };
 
             }
             else
             {
                 if (withdraw.StartDate.Date < DateTime.Now.Date)
-                    throw new Exception("Start data must be greater than: " + DateTime.Now.ToString("dd/MM/yyyy"));
+                    return new WithDrawResultDTO
+                    {
+                        Success = false,
+                        Errors = new string[] { $"Start data must be greater than: " + DateTime.Now.ToString("dd/MM/yyyy")}
+                    };
 
                 if (withdraw.EndDate.Date < withdraw.StartDate.Date)
-                    throw new Exception("End data must be greater than: " + withdraw.StartDate.ToString("dd/MM/yyyy"));
+                    return new WithDrawResultDTO
+                    {
+                        Success = false,
+                        Errors = new string[] { $"End data must be greater than: " + withdraw.StartDate.ToString("dd/MM/yyyy")}
+                    };
 
                 foreach (var b in withdraw.IdBooks)
                 {
                     var book = _bookRepository.Get(b);
 
                     if (book == null)
-                        throw new Exception("Book not found");
-
+                        return new WithDrawResultDTO
+                        {
+                            Success = false,
+                            Errors = new string[] { $"Book not found" }
+                        };
+                    
                     if (FindPendenteReservation(book.Id, withdraw.StartDate, withdraw.EndDate, withdraw.IdClient))
-                        throw new Exception("There is already an open reservation for the period informed, please informe it.");
+                        return new WithDrawResultDTO
+                        {
+                            Success = false,
+                            Errors = new string[] { $"There is already an open reservation for the period informed, please informe it." }
+                        };
 
                     var quantityReserved = FindQuantityReserved(book.Id, withdraw.StartDate, withdraw.EndDate);
                     var quantityWithdraw = FindQuantityWithdraw(book.Id, withdraw.StartDate, withdraw.EndDate);
 
                     if ((quantityReserved + quantityWithdraw) >= book.QuantityInventory)
-                        throw new Exception("Book " + book.Name + " not available for the period informed");
+                        return new WithDrawResultDTO
+                        {
+                            Success = false,
+                            Errors = new string[] { $"Book " + book.Name + " not available for the period informed" }
+                        };
 
                 }
 
                 var client = _clientRepository.Get(withdraw.IdClient);
 
                 if (client == null)
-                    throw new Exception("Client not found");
+                    return new WithDrawResultDTO
+                    {
+                        Success = false,
+                        Errors = new string[] { $"Client not found" }
+                    };
 
                 if ((int)withdraw.EndDate.Subtract(withdraw.StartDate).TotalDays < minimumReserveLimit)
-                    throw new Exception("Minimum limit for a 5-day booking.");
+                    return new WithDrawResultDTO
+                    {
+                        Success = false,
+                        Errors = new string[] { $"Minimum limit for a 5-day booking." }
+                    };
 
                 if (!_withdrawRepository.Create(withdraw))
-                    throw new Exception("Withdraw cannot be created!");
+                    return new WithDrawResultDTO
+                    {
+                        Success = false,
+                        Errors = new string[] { $"Withdraw cannot be created!" }
+                    };
 
-                return new WithdrawDTO
+                return new WithDrawResultDTO
                 {
-                    EndDate = withdraw.EndDate,
-                    StartDate = withdraw.StartDate,
-                    IdClient = withdraw.IdClient,
-                    IdBooks = withdraw.IdBooks,
-                    Id = withdraw.Id,
-                    StatusWithdraw = withdraw.StatusWithdraw
+                    Success = true,
+                    Details = new DetailsWithdrawResultDTO
+                    {
+                        EndDate = withdraw.EndDate,
+                        StartDate = withdraw.StartDate,
+                        IdClient = withdraw.IdClient,
+                        IdBooks = withdraw.IdBooks,
+                        Id = withdraw.Id,
+                        StatusWithdraw = withdraw.StatusWithdraw,
+                        IdReservation = withdraw.IdReservation,
+
+                    }
                 };
 
             }
@@ -145,17 +199,35 @@ namespace DesafioBibliotecaApi.Services
             });
         }
 
-        public bool FinalizeWithdraw(Guid idWithdraw)
+        public WithDrawResultDTO FinalizeWithdraw(Guid idWithdraw)
         {
             var withdraw = _withdrawRepository.Get(idWithdraw);
 
             if (withdraw is null)
-                throw new Exception("Reservation not found");
-
+                return new WithDrawResultDTO
+                {
+                    Success = false,
+                    Errors = new string[] { $"Reservation not found" }
+                }; 
+            
             if (withdraw.StatusWithdraw == EStatusWithdraw.Closed)
-                throw new Exception("Reservation is already closed.");
+                return new WithDrawResultDTO
+                {
+                    Success = false,
+                    Errors = new string[] { $"Reservation is already closed." }
+                }; 
 
-            return _withdrawRepository.FinalizeWithdraw(idWithdraw);
+            if(_withdrawRepository.FinalizeWithdraw(withdraw))
+                return new WithDrawResultDTO
+                {
+                    Success = true
+                };
+            else
+                return new WithDrawResultDTO
+                {
+                    Success = false,
+                    Errors = new string[] { $"Error finalized withdraw." }
+                };
 
         }
 
@@ -277,7 +349,7 @@ namespace DesafioBibliotecaApi.Services
             if (reservation.StatusReservation != EStatusReservation.InProgress)
                 throw new Exception("Reservation is already canceled or closed.");
 
-            return _reservationRepository.FinalizeReservation(idReservation);
+            return _reservationRepository.FinalizeReservation(reservation);
 
         }
     }

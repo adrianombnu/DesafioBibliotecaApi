@@ -18,31 +18,22 @@ namespace DesafioBibliotecaApi.Services
             _authorRepository = authorRepository;
          }
 
-        public BookDTO Create(Book book)
+        public ResultDTO Create(Book book)
         {
             var author = _authorRepository.Get(book.AuthorId);
 
             if (author is null)
-                throw new ArgumentException("Author not found");
+                return ResultDTO.ErroResult("Author not found");
 
             var bookExists = _bookRepository.CheckExistence(book.Id, book.Name, book.AuthorId, true);
 
             if (bookExists != null)
-                throw new Exception("The book is already registered, try another one!");
+                return ResultDTO.ErroResult("The book is already registered, try another one!");
 
             if(!_bookRepository.Create(book))
-                throw new Exception("Book cannot be created!");
+                return ResultDTO.ErroResult("Book cannot be created!");
 
-            return new BookDTO
-            {
-                Id = book.Id,
-                Name = book.Name,
-                ReleaseYear = book.ReleaseYear,
-                Description = book.Description,
-                AuthorId = book.AuthorId,
-                QuantityInventory = book.QuantityInventory
-               
-            };
+            return ResultDTO.SuccessResult(book);
 
         }
 
@@ -71,42 +62,6 @@ namespace DesafioBibliotecaApi.Services
 
             return new ResultBookDTO
             {
-                Name = book.Name,
-                ReleaseYear = book.ReleaseYear,
-                Description = book.Description,
-                AuthorId = book.AuthorId,
-                QuantityInventory = book.QuantityInventory
-
-            };
-        }
-
-        public bool Delete(Guid id)
-        {
-            var book = _bookRepository.Get(id);
-
-            if (book is null)
-                throw new Exception("Book not found!");
-
-            return _bookRepository.Delete(book);
-
-        }
-        
-        public BookDTO UpdateBook(Book book)
-        {
-            var bookOld = _bookRepository.Get(book.Id);
-
-            if (bookOld is null)
-                throw new Exception("Book not found!");
-
-            var bookExists = _bookRepository.CheckExistence(book.Id, book.Name, book.AuthorId);
-
-            if (bookExists != null)
-                throw new Exception("The book is already registered, try another one!");
-
-            _bookRepository.Update(book);
-
-            return new BookDTO
-            {
                 Id = book.Id,
                 Name = book.Name,
                 ReleaseYear = book.ReleaseYear,
@@ -115,6 +70,37 @@ namespace DesafioBibliotecaApi.Services
                 QuantityInventory = book.QuantityInventory
 
             };
+        }
+
+        public ResultDTO Delete(Guid id)
+        {
+            var book = _bookRepository.Get(id);
+
+            if (book is null)
+                return ResultDTO.ErroResult("Book not found!");
+
+            if (_bookRepository.Delete(book))
+                return ResultDTO.SuccessResult();
+            else
+                return ResultDTO.ErroResult("Error deleting book");
+
+        }
+        
+        public ResultDTO UpdateBook(Book book)
+        {
+            var bookOld = _bookRepository.Get(book.Id);
+
+            if (bookOld is null)
+                return ResultDTO.ErroResult("Book not found!");
+
+            var bookExists = _bookRepository.CheckExistence(book.Id, book.Name, book.AuthorId);
+
+            if (bookExists != null)
+                return ResultDTO.ErroResult("The book is already registered, try another one!");
+
+            _bookRepository.Update(book);
+
+            return ResultDTO.SuccessResult(book);
 
         }
 

@@ -19,8 +19,8 @@ namespace DesafioBibliotecaApi.Controllers
             _authorService = authorService;
         }
 
-        [HttpPost, Authorize(Roles = "Admin, Functionary"), Route("authors")]
-        //[HttpPost, Route("authors")]
+        //[HttpPost, Authorize(Roles = "Admin, Functionary"), Route("authors")]
+        [HttpPost, Route("authors")]
         public IActionResult Create([FromBody] NewAuthorDTO authorDTO)
         {
             authorDTO.Validar();
@@ -32,7 +32,12 @@ namespace DesafioBibliotecaApi.Controllers
             {
                 var author = new Author(authorDTO.Name, authorDTO.Lastname, authorDTO.Nacionality, authorDTO.Document, authorDTO.Age);
 
-                return Created("", _authorService.Create(author));
+                var result = _authorService.Create(author);
+
+                if (!result.Success)
+                    return BadRequest(result);
+                else
+                    return Ok(result);
 
             }
             catch (Exception ex)
@@ -64,7 +69,7 @@ namespace DesafioBibliotecaApi.Controllers
         [HttpGet, Route("{id}/authors")]
         public IActionResult Get(Guid id)
         {
-            try
+            /*try
             {
                 var userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
 
@@ -72,7 +77,7 @@ namespace DesafioBibliotecaApi.Controllers
             catch (Exception ex)
             {
                 return BadRequest("User not authenticated");
-            }            
+            } */           
 
             return Ok(_authorService.Get(id));
 
@@ -82,14 +87,13 @@ namespace DesafioBibliotecaApi.Controllers
         [HttpDelete, Route("{id}/authors")]
         public IActionResult Delete(Guid id)
         {
-            if (!_authorService.Delete(id))
-                return BadRequest("Wasn't possible to delete the author!");
+            var result = _authorService.Delete(id);
 
-            return Ok(new 
-                {
-                    Success = true,
-                    Message = "Author deleted with success"
-                } );
+            if (!result.Success)
+                return BadRequest(result);
+            else
+                return Ok(result);
+
         }
 
         //[HttpPut, Authorize(Roles = "Admin, Functionary"), Route("authors")]
@@ -105,7 +109,12 @@ namespace DesafioBibliotecaApi.Controllers
             {
                 var author = new Author(authorDTO.Name, authorDTO.Lastname, authorDTO.Nacionality, authorDTO.Document, authorDTO.Age, id);
 
-                return Created("", _authorService.UpdateAuthor(author));
+                var result = _authorService.UpdateAuthor(author);
+
+                if (!result.Success)
+                    return BadRequest(result);
+                else
+                    return Ok(result);
 
             }
             catch (Exception ex)

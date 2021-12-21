@@ -51,7 +51,12 @@ namespace DesafioBibliotecaApi.Controllers
 
                 var reservation = new Reservation(reservationDTO.StartDate, reservationDTO.EndDate, reservationDTO.idBooks, idClient);
 
-                return Created("", _reservationService.Create(reservation));
+                var result = _reservationService.Create(reservation);
+
+                if(!result.Success)
+                    return BadRequest("Error creating reservation :" + result.Errors);
+                else
+                    return Ok(result);
 
             }
             catch (Exception ex)
@@ -74,7 +79,12 @@ namespace DesafioBibliotecaApi.Controllers
             {
                 var reservation = new Reservation(reservationDTO.StartDate, reservationDTO.EndDate, reservationDTO.idBooks, reservationDTO.IdClient, id);
 
-                return Created("", _reservationService.Update(reservation));
+                var result = _reservationService.Update(reservation);
+
+                if (!result.Success)
+                    return BadRequest("Error updating reservation :" + result.Errors);
+                else
+                    return Ok(result);
 
             }
             catch (Exception ex)
@@ -113,7 +123,12 @@ namespace DesafioBibliotecaApi.Controllers
                 return BadRequest("User not authenticated");
             }
 
-            return Ok(_reservationService.Get(Guid.Parse(userId)));
+            var idClient = _clientService.FindIdClient(Guid.Parse(userId));
+
+            if (string.IsNullOrEmpty(idClient.ToString()))
+                return BadRequest("Client not found");
+
+            return Ok(_reservationService.Get(idClient));
 
         }
 
@@ -121,36 +136,25 @@ namespace DesafioBibliotecaApi.Controllers
         [HttpPost, Route("reservations/cancel/{idReservation}")]
         public IActionResult CancelReservation(Guid idReservation)
         {
-            if (_reservationService.CancelReservation(idReservation))
-                return Ok(new
-                {
-                    Success = true,
-                    Message = "Reservation canceled with success"
-                });
+            var result = _reservationService.CancelReservation(idReservation);
+
+            if (!result.Success)
+                return BadRequest("Error canceled reservation :" + result.Errors);
             else
-                return Ok(new
-                {
-                    Success = false,
-                    Message = "Error canceled reservation"
-                });
+                return Ok(result);
+
         }
 
         //[HttpPost, Authorize, Route("/reservations/finalize/{idReservation}")]
         [HttpPost, Route("/reservations/finalize/{idReservation}")]
         public IActionResult FinalizeReservation(Guid idReservation)
         {
-            if (_reservationService.FinalizeReservation(idReservation))
-                return Ok(new
-                {
-                    Success = true,
-                    Message = "Reservation finalized with success"
-                });
+            var result = _reservationService.FinalizeReservation(idReservation);
+
+            if (!result.Success)
+                return BadRequest("Error canceled reservation :" + result.Errors);
             else
-                return Ok(new
-                {
-                    Success = false,
-                    Message = "Error finalized reservation"
-                });
+                return Ok(result);
 
         }
     }

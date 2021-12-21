@@ -22,17 +22,11 @@ namespace DesafioBibliotecaApi.Repository
 
         }
 
-        public bool FinalizeWithdraw(Guid idWithdraw)
+        public bool FinalizeWithdraw(Withdraw withdraw)
         {
-            var withdraw = _store.Where(a => a.Value.Id == idWithdraw).SingleOrDefault().Value;
-
-            if (withdraw is null)
-                throw new Exception("Withdraw not found.");
-
             withdraw.FinalizeWithdraw();
 
             return true;
-
         }
 
         public IEnumerable<Withdraw> GetByPeriod(DateTime starDate, DateTime endDate, Guid idBook)

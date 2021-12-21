@@ -17,26 +17,16 @@ namespace DesafioBibliotecaApi.Repository
         }
 
 
-        public bool CancelReservation(Guid idReservation)
+        public bool CancelReservation(Reservation reservation)
         {
-            var reservataion = _store.Where(a => a.Value.Id == idReservation).SingleOrDefault().Value;
-
-            if (reservataion is null)
-                throw new Exception("Reservation not found.");
-
-            reservataion.CancelReservation();
+            reservation.CancelReservation();
 
             return true;
 
         }
-        public bool FinalizeReservation(Guid idReservation)
+        public bool FinalizeReservation(Reservation reservation)
         {
-            var reservataion = _store.Where(a => a.Value.Id == idReservation).SingleOrDefault().Value;
-
-            if (reservataion is null)
-                throw new Exception("Reservation not found.");
-
-            reservataion.FinalizeReservation();
+            reservation.FinalizeReservation();
 
             return true;
 

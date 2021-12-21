@@ -17,8 +17,10 @@ namespace DesafioBibliotecaApi.DTOs
             if (string.IsNullOrEmpty(EndDate.ToString()))
                 AddErros("Invalid end date");
             
-            if (idBooks is null)
+            if (idBooks is null || idBooks.Count == 0)
                 AddErros("Invalid books");
+
+            
             
         }
     }

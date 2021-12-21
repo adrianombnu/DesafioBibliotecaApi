@@ -65,21 +65,11 @@ namespace DesafioBibliotecaApi.Controllers
         [HttpPost, Route("withdraws/finalize/{idWithdraw}")]
         public IActionResult FinalizeWithdraw(Guid idWithdraw)
         {
-            if (_withdrawService.FinalizeWithdraw(idWithdraw))
-                return Ok(new
-                {
-                    Success = true,
-                    Message = "Withdraw finalized with success"
-                });
-            else
-                return Ok(new
-                {
-                    Success = false,
-                    Message = "Withdraw finalized reservation"
-                });
+            return Ok(_withdrawService.FinalizeWithdraw(idWithdraw));
+
         }
 
-        //[HttpGet, Authorize, Route("withdraw")]
+        //[HttpGet, Authorize(Roles = "Admin, Functionary"), Route("withdraw")]
         [HttpGet, Route("withdraws")]
         public IActionResult Get([FromQuery] DateTime? startDate,
                                  [FromQuery] DateTime? endDate,

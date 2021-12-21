@@ -32,7 +32,13 @@ namespace DesafioBibliotecaApi.Controllers
             {
                 var book = new Book(bookDTO.Name, bookDTO.Description, bookDTO.ReleaseYear, bookDTO.AuthorId, bookDTO.QuantityInventory);
 
-                return Created("", _bookService.Create(book));
+                var result = _bookService.Create(book);
+
+                if (!result.Success)
+                    return BadRequest(result);
+                else
+                    return Ok(result);
+
 
             }
             catch (Exception ex)
@@ -50,7 +56,7 @@ namespace DesafioBibliotecaApi.Controllers
                                  [FromQuery] int page = 1,
                                  [FromQuery] int itens = 50)
         {
-            try
+            /*try
             {
                 var userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
 
@@ -58,7 +64,7 @@ namespace DesafioBibliotecaApi.Controllers
             catch (Exception ex)
             {
                 return BadRequest("User not authenticated");
-            }
+            }*/
 
             return Ok(_bookService.GetFilter(name, releaseYear, description, page, itens));
                         
@@ -68,7 +74,7 @@ namespace DesafioBibliotecaApi.Controllers
         [HttpGet, Route("books/{id}")]
         public IActionResult Get(Guid id)
         {
-            try
+            /*try
             {
                 var userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
 
@@ -76,7 +82,7 @@ namespace DesafioBibliotecaApi.Controllers
             catch (Exception ex)
             {
                 return BadRequest("User not authenticated");
-            }
+            }*/
             
             return Ok(_bookService.Get(id));
 
@@ -86,14 +92,13 @@ namespace DesafioBibliotecaApi.Controllers
         [HttpDelete, Route("{id}/books")]
         public IActionResult Delete(Guid id)
         {
-            if (!_bookService.Delete(id))
-                return BadRequest("Wasn't possible to delete the book!");
+            var result = _bookService.Delete(id);
 
-            return Ok(new
-            {
-                Success = true,
-                Message = "Book deleted with success"
-            });
+            if (!result.Success)
+                return BadRequest(result);
+            else
+                return Ok(result);
+
         }
 
 
@@ -110,7 +115,12 @@ namespace DesafioBibliotecaApi.Controllers
             {
                 var book = new Book(bookDTO.Name, bookDTO.Description, bookDTO.ReleaseYear, bookDTO.AuthorId,bookDTO.QuantityInventory,id);
 
-                return Created("", _bookService.UpdateBook(book));
+                var result = _bookService.UpdateBook(book);
+
+                if (!result.Success)
+                    return BadRequest(result);
+                else
+                    return Ok(result);
 
             }
             catch (Exception ex)
