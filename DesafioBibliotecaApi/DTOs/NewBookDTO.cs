@@ -26,7 +26,7 @@ namespace DesafioBibliotecaApi.DTOs
             if (AuthorId.ToString().Length < 0)
                 AddErros("Author not informed");
             
-            if (ReleaseYear <= 0)
+            if (ReleaseYear <= 0 || ReleaseYear > DateTime.Now.Year)
                 AddErros("Release year invalid");
             
             if (QuantityInventory <= 0)

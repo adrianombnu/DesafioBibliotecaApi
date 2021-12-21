@@ -13,14 +13,16 @@ namespace DesafioBibliotecaApi.Controllers
     public class ReservationController : ControllerBase
     {
         private readonly ReservationService _reservationService;
+        private readonly ClientService _clientService;
 
-        public ReservationController(ReservationService reservationService)
+        public ReservationController(ReservationService reservationService, ClientService clientService)
         {
             _reservationService = reservationService;
+            _clientService = clientService;
         }
 
-        [HttpPost, Authorize, Route("reservations")]
-        //[HttpPost, Route("reservations")]
+        //[HttpPost, Authorize, Route("reservations")]
+        [HttpPost, Route("reservations")]
         public IActionResult Create([FromBody] NewReservationDTO reservationDTO)
         {
             reservationDTO.Validar();
@@ -28,9 +30,26 @@ namespace DesafioBibliotecaApi.Controllers
             if (!reservationDTO.Success)
                 return BadRequest(reservationDTO.Errors);
 
+            var userId = string.Empty;
+
             try
             {
-                var reservation = new Reservation(reservationDTO.StartDate, reservationDTO.EndDate, reservationDTO.idBooks, reservationDTO.IdClient);
+                userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("User not authenticated");
+            }
+
+            try
+            {
+                var idClient = _clientService.FindIdClient(Guid.Parse(userId));
+
+                if (string.IsNullOrEmpty(idClient.ToString()))
+                    return BadRequest("Client not found");
+
+                var reservation = new Reservation(reservationDTO.StartDate, reservationDTO.EndDate, reservationDTO.idBooks, idClient);
 
                 return Created("", _reservationService.Create(reservation));
 
@@ -42,8 +61,8 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        [HttpPut, Authorize, Route("reservations")]
-        //[HttpPut, Route("reservations")]
+        //[HttpPut, Authorize, Route("reservations")]
+        [HttpPut, Route("reservations")]
         public IActionResult Update(Guid id, [FromBody] UpdateReservationDTO reservationDTO)
         {
             reservationDTO.Validar();
@@ -65,8 +84,8 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        [HttpGet, Authorize, Route("reservations")]
-        //[HttpGet, Route("reservations")]
+        //[HttpGet, Authorize, Route("reservations")]
+        [HttpGet, Route("reservations")]
         public IActionResult Get([FromQuery] DateTime? startDate,
                                  [FromQuery] DateTime? endDate,
                                  [FromQuery] string? author,
@@ -78,8 +97,8 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        [HttpGet, Authorize, Route("reservations/customer")]
-        //[HttpGet, Route("reservations/customer")]
+        //[HttpGet, Authorize, Route("reservations/customer")]
+        [HttpGet, Route("reservations/customer")]
         public IActionResult Get()
         {
             var userId = string.Empty;
@@ -98,19 +117,40 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        [HttpPost, Authorize, Route("reservations/cancel{idReservation}")]
-        //[HttpPost, Route("reservations/cancel/{idReservation}")]
+        //[HttpPost, Authorize, Route("reservations/cancel/{idReservation}")]
+        [HttpPost, Route("reservations/cancel/{idReservation}")]
         public IActionResult CancelReservation(Guid idReservation)
         {
-            return Ok(_reservationService.CancelReservation(idReservation));
-
+            if (_reservationService.CancelReservation(idReservation))
+                return Ok(new
+                {
+                    Success = true,
+                    Message = "Reservation canceled with success"
+                });
+            else
+                return Ok(new
+                {
+                    Success = false,
+                    Message = "Error canceled reservation"
+                });
         }
 
-        [HttpPost, Authorize, Route("/reservations/finalize{idReservation}")]
-        //[HttpPost, Route("/reservations/finalize/{idReservation}")]
+        //[HttpPost, Authorize, Route("/reservations/finalize/{idReservation}")]
+        [HttpPost, Route("/reservations/finalize/{idReservation}")]
         public IActionResult FinalizeReservation(Guid idReservation)
         {
-            return Ok(_reservationService.FinalizeReservation(idReservation));
+            if (_reservationService.FinalizeReservation(idReservation))
+                return Ok(new
+                {
+                    Success = true,
+                    Message = "Reservation finalized with success"
+                });
+            else
+                return Ok(new
+                {
+                    Success = false,
+                    Message = "Error finalized reservation"
+                });
 
         }
     }

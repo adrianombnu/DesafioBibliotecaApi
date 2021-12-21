@@ -35,6 +35,15 @@ namespace DesafioBibliotecaApi.Controllers
             if (!userEmployeeDTO.Success)
                 return BadRequest(userEmployeeDTO.Errors);
 
+            if (userEmployeeDTO.Role.ToLower() == Roles.ADMIN_ROLE.ToLower())
+                userEmployeeDTO.Role = Roles.ADMIN_ROLE;
+
+            if(userEmployeeDTO.Role.ToLower()  == Roles.CUSTUMER_ROLE.ToLower())
+                userEmployeeDTO.Role = Roles.CUSTUMER_ROLE;
+
+            if(userEmployeeDTO.Role.ToLower() == Roles.FUNCTIONARY_ROLE.ToLower())
+                userEmployeeDTO.Role = Roles.FUNCTIONARY_ROLE;
+
             try
             {
                 var user = new User(userEmployeeDTO.Username, userEmployeeDTO.Password, userEmployeeDTO.Role);
@@ -42,7 +51,6 @@ namespace DesafioBibliotecaApi.Controllers
                 var client = new Client(userEmployeeDTO.Client.Name,
                                         userEmployeeDTO.Client.Lastname,
                                         userEmployeeDTO.Client.Document,
-                                        userEmployeeDTO.Client.Age,
                                         userEmployeeDTO.Client.ZipCode,
                                         userEmployeeDTO.Client.Birthdate,
                                         user.Id);
@@ -76,8 +84,8 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        [HttpPut, Authorize, Route("users")]
-        //[HttpPut, Route("users")]
+       // [HttpPut, Authorize, Route("users")]
+        [HttpPut, Route("users")]
         public async Task<IActionResult> UpdateUser(UpdateUserDTO userDTO)
         {
             userDTO.Validar();
@@ -107,7 +115,6 @@ namespace DesafioBibliotecaApi.Controllers
                 var client = new Client(userDTO.Client.Name,
                                         userDTO.Client.Lastname,
                                         userDTO.Client.Document,
-                                        userDTO.Client.Age,
                                         userDTO.Client.ZipCode,
                                         userDTO.Client.Birthdate,
                                         Guid.Parse(userId),
@@ -166,8 +173,8 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        [HttpGet, Authorize, Route("users")]
-        //[HttpGet, Route("users")]
+        //[HttpGet, Authorize, Route("users")]
+        [HttpGet, Route("users")]
         public IActionResult Get([FromQuery] string? name = null,
                                  [FromQuery] DateTime? birthdate = null,
                                  [FromQuery] string? document = null,
@@ -179,8 +186,8 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        [HttpGet, Authorize(Roles = "admin, funcionario"), Route("user_logged")]
-        //[HttpGet, Route("user_logged")]
+        //[HttpGet, Authorize(Roles = "Admin, Functionary"), Route("user_logged")]
+        [HttpGet, Route("user_logged")]
         public IActionResult Get()
         {
             var userId = string.Empty;
@@ -193,6 +200,7 @@ namespace DesafioBibliotecaApi.Controllers
             catch (Exception ex)
             {
                 return BadRequest("User not authenticated");
+
             }
 
             return Ok(_employeeService.Get(Guid.Parse(userId)));

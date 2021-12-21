@@ -8,7 +8,6 @@ namespace DesafioBibliotecaApi.DTOs
         public string Name { get; set; }
         public string Lastname { get; set; }
         public string Document { get; set; }
-        public int Age { get; set; }
         public string ZipCode { get; set; }
         public DateTime Birthdate { get; set; }
         public NewAdressDTO? Adress { get; set; }
@@ -31,8 +30,8 @@ namespace DesafioBibliotecaApi.DTOs
             if (string.IsNullOrEmpty(ZipCode) || ZipCode.Length > 50 || rgx.IsMatch(ZipCode))
                 AddErros("Invalid CEP");
 
-            if (Age <= 0)
-                AddErros("Invalid age");
+            if (Birthdate.Date > DateTime.Now.Date || string.IsNullOrEmpty(Birthdate.ToString()))
+                AddErros("Invalid birthdate");
 
             if (Adress is not null)
             {

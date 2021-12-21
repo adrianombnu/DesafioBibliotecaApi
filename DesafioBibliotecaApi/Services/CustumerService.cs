@@ -57,7 +57,6 @@ namespace DesafioBibliotecaApi.Services
                         Location = client.Adress.Location,
                         State = client.Adress.State
                     },
-                    Age = client.Age,
                     Document = client.Document,
                     Lastname = client.Lastname,
                     Name = client.Name,

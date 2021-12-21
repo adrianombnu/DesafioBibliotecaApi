@@ -8,7 +8,6 @@ namespace DesafioBibliotecaApi.DTOs
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public List<Guid> IdBooks { get; set; }
-        public Guid IdClient { get; set; }
         public Guid? IdReservation { get; set; }    
 
         public override void Validar()
@@ -21,10 +20,6 @@ namespace DesafioBibliotecaApi.DTOs
             
             if (IdBooks is null)
                 AddErros("Invalid books");
-            
-            if (string.IsNullOrEmpty(IdClient.ToString()))
-                AddErros("Invalid client");
-            
 
         }
     }

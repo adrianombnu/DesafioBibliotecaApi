@@ -9,30 +9,27 @@ namespace DesafioBibliotecaApi.Entities
         public string Name { get; set; }
         public string Lastname { get; set; } 
         public string Document { get; set; } 
-        public int Age { get; set; }
         public string ZipCode { get; set; }
         public DateTime Birthdate { get; set; }
         public Guid IdUser { get; set; }
         public Adress Adress { get; set; }
 
-        public Client(string name, string lastname, string document, int age, string zipCode, DateTime birthdate, Guid idUser)
+        public Client(string name, string lastname, string document, string zipCode, DateTime birthdate, Guid idUser)
         {
             Name = name;
             Lastname = lastname;
             Document = document;
-            Age = age;
             ZipCode = zipCode;
             Birthdate = birthdate;
             IdUser = idUser;
             Id = Guid.NewGuid();
         }
 
-        public Client(string name, string lastname, string document, int age, string zipCode, DateTime birthdate, Guid idUser, Guid idClient)
+        public Client(string name, string lastname, string document, string zipCode, DateTime birthdate, Guid idUser, Guid idClient)
         {
             Name = name;
             Lastname = lastname;
             Document = document;
-            Age = age;
             ZipCode = zipCode;
             Birthdate = birthdate;
             IdUser = idUser;
@@ -44,7 +41,6 @@ namespace DesafioBibliotecaApi.Entities
             Name = client.Name; 
             Lastname = client.Lastname; 
             Document = client.Document; 
-            Age = client.Age;   
             ZipCode = client.ZipCode;   
             Adress = client.Adress;
             Birthdate = client.Birthdate;
@@ -71,8 +67,8 @@ namespace DesafioBibliotecaApi.Entities
             if (ZipCode is null || ZipCode.Length > 50 || rgx.IsMatch(ZipCode))
                 throw new Exception("Invalid zipcode.");
 
-            if (Age <= 0)
-                throw new Exception("Invalid age.");
+            if (Birthdate.Date > DateTime.Now.Date || string.IsNullOrEmpty(Birthdate.ToString()))
+                throw new Exception("Invalid birthdate.");
 
         } 
     }

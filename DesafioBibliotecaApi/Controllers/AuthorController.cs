@@ -19,7 +19,7 @@ namespace DesafioBibliotecaApi.Controllers
             _authorService = authorService;
         }
 
-        [HttpPost, Authorize(Roles = "admin, functionary"), Route("authors")]
+        [HttpPost, Authorize(Roles = "Admin, Functionary"), Route("authors")]
         //[HttpPost, Route("authors")]
         public IActionResult Create([FromBody] NewAuthorDTO authorDTO)
         {
@@ -42,8 +42,8 @@ namespace DesafioBibliotecaApi.Controllers
                         
         }
 
-        [HttpGet, Authorize, Route("authors")]
-        //[HttpGet, Route("authors")]
+        //[HttpGet, Authorize, Route("authors")]
+        [HttpGet, Route("authors")]
         public IActionResult Get([FromQuery] string? name, [FromQuery] string? nationality, [FromQuery] int? age, [FromQuery] int page = 1, [FromQuery] int itens = 50)
         {
             try
@@ -60,8 +60,8 @@ namespace DesafioBibliotecaApi.Controllers
             
         }
 
-        [HttpGet, Authorize, Route("{id}/authors")]
-        //[HttpGet, Route("{id}/authors")]
+        //[HttpGet, Authorize, Route("{id}/authors")]
+        [HttpGet, Route("{id}/authors")]
         public IActionResult Get(Guid id)
         {
             try
@@ -78,18 +78,22 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        [HttpDelete, Authorize(Roles = "admin, functionary"), Route("{id}/authors")]
-        //[HttpDelete, Route("{id}/authors")]
+        //[HttpDelete, Authorize(Roles = "Admin, Functionary"), Route("{id}/authors")]
+        [HttpDelete, Route("{id}/authors")]
         public IActionResult Delete(Guid id)
         {
             if (!_authorService.Delete(id))
                 return BadRequest("Wasn't possible to delete the author!");
 
-            return Ok("Author deleted with success.");
+            return Ok(new 
+                {
+                    Success = true,
+                    Message = "Author deleted with success"
+                } );
         }
 
-        [HttpPut, Authorize(Roles = "admin, functionary"), Route("authors")]
-        //[HttpPut, Route("authors")]
+        //[HttpPut, Authorize(Roles = "Admin, Functionary"), Route("authors")]
+        [HttpPut, Route("authors")]
         public IActionResult UpdateAuthor(Guid id, NewAuthorDTO authorDTO)
         {
             authorDTO.Validar();

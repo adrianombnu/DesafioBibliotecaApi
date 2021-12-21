@@ -25,7 +25,7 @@ namespace DesafioBibliotecaApi.Services
                     Errors = new string[] { $"Ocorreu um erro ao autenticar." }
                 };
 
-            if(newPassword != confirmNewPassword)
+            if (newPassword != confirmNewPassword)
                 return new UpdateLoginResultDTO
                 {
                     Success = false,
@@ -45,7 +45,7 @@ namespace DesafioBibliotecaApi.Services
             };
 
         }
-        
+
         public LoginResultDTO Login(string username, string password)
         {
             var loginResult = _userRepository.Login(username, password);
@@ -68,7 +68,8 @@ namespace DesafioBibliotecaApi.Services
                 {
                     Id = loginResult.User.Id,
                     Token = token,
-                    Username = loginResult.User.UserName
+                    Username = loginResult.User.UserName,
+                    Role = loginResult.User.Role
 
                 }
             };

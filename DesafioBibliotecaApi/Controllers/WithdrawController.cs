@@ -13,14 +13,16 @@ namespace DesafioBibliotecaApi.Controllers
     public class WithdrawController : ControllerBase
     {
         private readonly WithdrawService _withdrawService;
+        private readonly ClientService _clientService;
 
-        public WithdrawController(WithdrawService withdrawService)
+        public WithdrawController(WithdrawService withdrawService, ClientService clientService)
         {
             _withdrawService = withdrawService;
+            _clientService = clientService;
         }
 
-        [HttpPost, Authorize, Route("withdraw")]
-        //[HttpPost, Route("withdraw")]
+        //[HttpPost, Authorize, Route("withdraw")]
+        [HttpPost, Route("withdraws")]
         public IActionResult Create([FromBody] NewWithdrawDTO withdrawDTO)
         {
             withdrawDTO.Validar();
@@ -28,9 +30,26 @@ namespace DesafioBibliotecaApi.Controllers
             if (!withdrawDTO.Success)
                 return BadRequest(withdrawDTO.Errors);
 
+            var userId = string.Empty;
+
             try
             {
-                var withdraw = new Withdraw(withdrawDTO.StartDate, withdrawDTO.EndDate, withdrawDTO.IdBooks, withdrawDTO.IdClient, withdrawDTO.IdReservation);
+                userId = User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("User not authenticated");
+            }
+
+            try
+            {
+                var idClient = _clientService.FindIdClient(Guid.Parse(userId));
+
+                if (string.IsNullOrEmpty(idClient.ToString()))
+                    return BadRequest("Client not found");
+
+                var withdraw = new Withdraw(withdrawDTO.StartDate, withdrawDTO.EndDate, withdrawDTO.IdBooks, idClient, withdrawDTO.IdReservation);
 
                 return Created("", _withdrawService.Create(withdraw));
 
@@ -42,16 +61,26 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        [HttpPost, Authorize, Route("withdraw/finalize/{idWithdraw}")]
-        //[HttpPost, Route("withdraw/finalize/{idWithdraw}")]
+        //[HttpPost, Authorize, Route("withdraw/finalize/{idWithdraw}")]
+        [HttpPost, Route("withdraws/finalize/{idWithdraw}")]
         public IActionResult FinalizeWithdraw(Guid idWithdraw)
         {
-            return Created("", _withdrawService.FinalizeWithdraw(idWithdraw));
-
+            if (_withdrawService.FinalizeWithdraw(idWithdraw))
+                return Ok(new
+                {
+                    Success = true,
+                    Message = "Withdraw finalized with success"
+                });
+            else
+                return Ok(new
+                {
+                    Success = false,
+                    Message = "Withdraw finalized reservation"
+                });
         }
 
-        [HttpGet, Authorize, Route("withdraw")]
-        //[HttpGet, Route("withdraw")]
+        //[HttpGet, Authorize, Route("withdraw")]
+        [HttpGet, Route("withdraws")]
         public IActionResult Get([FromQuery] DateTime? startDate,
                                  [FromQuery] DateTime? endDate,
                                  [FromQuery] string? author,
@@ -63,8 +92,8 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        [HttpGet, Authorize, Route("withdraw/inprogress")]
-        //[HttpGet, Route("withdraw/inprogress")]
+        //[HttpGet, Authorize, Route("withdraw/inprogress")]
+        [HttpGet, Route("withdraws/inprogress")]
         public IActionResult Get()
         {
             var userId = string.Empty;

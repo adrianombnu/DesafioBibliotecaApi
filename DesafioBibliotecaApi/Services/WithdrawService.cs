@@ -52,7 +52,7 @@ namespace DesafioBibliotecaApi.Services
                 FinalizeReservation(reservation.Id);
 
                 var newWithdraw = new Withdraw(DateTime.Now, reservation.EndDate, reservation.IdBooks, reservation.IdClient, reservation.Id);
-                
+
                 if (!_withdrawRepository.Create(newWithdraw))
                     throw new Exception("Withdraw cannot be created!");
 
@@ -65,7 +65,7 @@ namespace DesafioBibliotecaApi.Services
                     Id = newWithdraw.Id,
                     StatusWithdraw = newWithdraw.StatusWithdraw,
                     IdReservation = newWithdraw.IdReservation,
-                    
+
                 };
 
             }
@@ -138,7 +138,8 @@ namespace DesafioBibliotecaApi.Services
                     IdClient = a.IdClient,
                     Id = a.Id,
                     IdBooks = a.IdBooks,
-                    StatusWithdraw = a.StatusWithdraw
+                    StatusWithdraw = a.StatusWithdraw,
+                    IdReservation = a.IdReservation
 
                 };
             });
@@ -148,7 +149,7 @@ namespace DesafioBibliotecaApi.Services
         {
             var withdraw = _withdrawRepository.Get(idWithdraw);
 
-            if(withdraw is null)
+            if (withdraw is null)
                 throw new Exception("Reservation not found");
 
             if (withdraw.StatusWithdraw == EStatusWithdraw.Closed)
@@ -209,7 +210,7 @@ namespace DesafioBibliotecaApi.Services
 
             if (startDate.HasValue)
                 retorno = retorno.Where(x => x.StartDate.Date.ToString("MM/dd/yyyy") == startDate.Value.Date.ToString("MM/dd/yyyy"));
-            
+
             if (endDate.HasValue)
                 retorno = retorno.Where(x => x.EndDate.ToString("MM/dd/yyyy") == endDate.Value.ToString("MM/dd/yyyy"));
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using DesafioBibliotecaApi.Entities;
 
 namespace DesafioBibliotecaApi.DTOs
 {
@@ -21,6 +22,11 @@ namespace DesafioBibliotecaApi.DTOs
                 AddErros("Invalid password");
             
             if (string.IsNullOrEmpty(Role) || Role.Length > 50 || rgx.IsMatch(Role))
+                AddErros("Invalid role");
+
+            if (Role.ToLower() != Roles.ADMIN_ROLE.ToLower()       &&
+                Role.ToLower() != Roles.CUSTUMER_ROLE.ToLower()    &&
+                Role.ToLower() != Roles.FUNCTIONARY_ROLE.ToLower())
                 AddErros("Invalid role");
             
             if (Client is null)

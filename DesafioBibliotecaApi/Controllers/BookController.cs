@@ -19,8 +19,8 @@ namespace DesafioBibliotecaApi.Controllers
             _bookService = bookService;
         }
 
-        [HttpPost, Authorize(Roles = "admin, functionary"), Route("books")]
-        //[HttpPost, Route("books")]
+        //[HttpPost, Authorize(Roles = "Admin, Functionary"), Route("books")]
+        [HttpPost, Route("books")]
         public IActionResult Create([FromBody] NewBookDTO bookDTO)
         {
             bookDTO.Validar();
@@ -42,8 +42,8 @@ namespace DesafioBibliotecaApi.Controllers
                         
         }
 
-        [HttpGet, Authorize, Route("books")]
-        //[HttpGet, Route("books")]
+        //[HttpGet, Authorize, Route("books")]
+        [HttpGet, Route("books")]
         public IActionResult Get([FromQuery] string? name,
                                  [FromQuery] int? releaseYear,
                                  [FromQuery] string? description,
@@ -64,8 +64,8 @@ namespace DesafioBibliotecaApi.Controllers
                         
         }
 
-        [HttpGet, Authorize, Route("books/{id}")]
-        //[HttpGet, Route("books/{id}")]
+        //[HttpGet, Authorize, Route("books/{id}")]
+        [HttpGet, Route("books/{id}")]
         public IActionResult Get(Guid id)
         {
             try
@@ -82,19 +82,23 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        [HttpDelete, Authorize(Roles = "admin, functionary"), Route("{id}/books")]
-        //[HttpDelete, Route("{id}/books")]
+       //[HttpDelete, Authorize(Roles = "Admin, Functionary"), Route("{id}/books")]
+        [HttpDelete, Route("{id}/books")]
         public IActionResult Delete(Guid id)
         {
             if (!_bookService.Delete(id))
                 return BadRequest("Wasn't possible to delete the book!");
 
-            return Ok("Book deleted with success.");
+            return Ok(new
+            {
+                Success = true,
+                Message = "Book deleted with success"
+            });
         }
 
 
-        [HttpPut, Authorize(Roles = "admin, functionary"), Route("{id}/books")]
-        //[HttpPut,  Route("{id}/books")]
+        //[HttpPut, Authorize(Roles = "Admin, Functionary"), Route("{id}/books")]
+        [HttpPut,  Route("{id}/books")]
         public IActionResult UpdateBook(Guid id, [FromBody] NewBookDTO bookDTO)
         {
             bookDTO.Validar();

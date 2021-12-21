@@ -42,7 +42,6 @@ namespace DesafioBibliotecaApi.Controllers
                 var client = new Client(userDTO.Client.Name,
                                         userDTO.Client.Lastname,
                                         userDTO.Client.Document,
-                                        userDTO.Client.Age,
                                         userDTO.Client.ZipCode,
                                         userDTO.Client.Birthdate,
                                         user.Id);
@@ -77,8 +76,8 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        [HttpPut, Authorize, Route("users")]
-        //[HttpPut, Route("users")]
+        //[HttpPut, Authorize, Route("users")]
+        [HttpPut, Route("users")]
         public async Task<IActionResult> UpdateUser(UpdateUserDTO userDTO)
         {
             userDTO.Validar();
@@ -108,7 +107,6 @@ namespace DesafioBibliotecaApi.Controllers
                 var client = new Client(userDTO.Client.Name,
                                         userDTO.Client.Lastname,
                                         userDTO.Client.Document,
-                                        userDTO.Client.Age,
                                         userDTO.Client.ZipCode,
                                         userDTO.Client.Birthdate,
                                         Guid.Parse(userId),
@@ -168,8 +166,8 @@ namespace DesafioBibliotecaApi.Controllers
 
         }
 
-        [HttpGet, Authorize, Route("users")]
-        //[HttpGet, Route("users")]
+        //[HttpGet, Authorize, Route("users")]
+        [HttpGet, Route("users")]
         public IActionResult Get()
         {
             var userId = string.Empty;

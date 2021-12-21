@@ -169,7 +169,7 @@ namespace DesafioBibliotecaApi.Services
 
             var lastWorkingDay = ValidateLastWorkingDay(DateTime.Now);
 
-            if (reservation.StartDate.Date > lastWorkingDay.Date)
+            if (lastWorkingDay.Date > reservation.StartDate.Date)
                 throw new Exception("The reservation can only be canceled up to one business day prior to the reservation date.");
 
             return _reservationRepository.CancelReservation(idReservation);

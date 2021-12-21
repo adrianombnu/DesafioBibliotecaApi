@@ -61,7 +61,7 @@ namespace DesafioBibliotecaApi.Entities
                 throw new Exception("Invalid lastname.");
             }
                          
-            if (ReleaseYear == 0)
+            if (ReleaseYear <= 0 || ReleaseYear > DateTime.Now.Year)
                 throw new Exception("Invalid releaseYear.");
 
 
