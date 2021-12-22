@@ -98,7 +98,12 @@ namespace DesafioBibliotecaApi.Controllers
                 return BadRequest("User not authenticated");
             }
 
-            return Ok(_withdrawService.Get(Guid.Parse(userId)));
+            var idClient = _clientService.FindIdClient(Guid.Parse(userId));
+
+            if (string.IsNullOrEmpty(idClient.ToString()))
+                return BadRequest("Client not found");
+
+            return Ok(_withdrawService.Get(idClient));
 
         }
 
